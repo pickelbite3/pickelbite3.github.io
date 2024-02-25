@@ -1,0 +1,91 @@
+body {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: rgb(53, 53, 53);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+hr {
+    width: 30vw;
+    font-size: large;
+    border: none;
+    background-color: rgb(83, 83, 83);
+    height: 1px;
+}
+
+.title {
+    text-align: center;
+    color: darkgray;
+}
+
+.subtitle {
+    text-align: center;
+    color: darkgray;
+    margin-top: 0;
+}
+
+.count {
+    font-size: small;
+    color: rgb(149, 149, 149);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: larger;
+}
+
+.request {
+    color: rgb(136, 212, 117);
+    text-decoration: none;
+    font-size: x-large;
+}
+
+.opts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.search-input {
+    background-color: rgb(53, 53, 53);
+    border: none;
+    font-size: xx-large;
+    text-align: center;
+    width: 40vw;
+    color: rgb(92, 146, 79);
+}
+
+.sort-lbl {
+    margin: 0px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: rgb(53, 53, 53);
+    font-size: large;
+    color: rgb(149, 149, 149);
+}
+
+.sort-btn {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: rgb(53, 53, 53);
+    font-size: large;
+    color: rgb(149, 149, 149);
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.sort-btn:active {
+    background-color: rgb(83, 83, 83);
+}
+
+.search-input:focus {
+    outline: none;
+}
+ 
+.gametxt {
+    text-decoration: none;
+    color: rgb(150, 172, 150);
+}
