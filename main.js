@@ -39,3 +39,8 @@ function toggleSort() {
         gamesContainer.appendChild(game);
     });
 }
+
+function closeAlert() {
+    const alertBox = document.querySelector(".alert");
+    alertBox.style.display = "none";
+}
