@@ -1,16 +1,15 @@
 var sortAscending = false;
 const sortbtn = document.getElementById('sortToggle');
+const gamesContainer = document.getElementById("games-container");
+const originalOrder = Array.from(gamesContainer.getElementsByClassName("game"));
 
 function filterGames() {
     const searchInput = document.querySelector('.search-input');
-    const gamesContainer = document.getElementById('games-container');
     const games = gamesContainer.getElementsByClassName('game');
-
     const searchTerm = searchInput.value.toLowerCase();
 
     for (const game of games) {
         const gameText = game.querySelector('.gametxt').textContent.toLowerCase();
-
         if (gameText.includes(searchTerm)) {
             game.style.display = 'block';
         } else {
@@ -20,21 +19,19 @@ function filterGames() {
 }
 
 function toggleSort() {
-    var gamesContainer = document.getElementById("games-container");
     var games = Array.from(gamesContainer.getElementsByClassName("game"));
 
     sortAscending = !sortAscending;
 
     if (sortAscending) {
         sortbtn.innerHTML = "A-Z";
-        games.sort((a, b) => a.textContent.localeCompare(b.textContent));
+        games.sort((a, b) => a.querySelector('.gametxt').textContent.localeCompare(b.querySelector('.gametxt').textContent));
     } else {
         sortbtn.innerHTML = "New - Old";
-        games.reverse();
+        games = originalOrder.slice();
     }
 
     gamesContainer.innerHTML = "";
-
     games.forEach(game => {
         gamesContainer.appendChild(game);
     });
