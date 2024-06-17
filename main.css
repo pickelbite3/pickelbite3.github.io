@@ -130,9 +130,9 @@ hr {
 }
 
 .random-game:hover {
-    padding: 15px;
+    padding: 13px;
 }
 
 .random-game:active {
-    padding: 5px;
+    padding: 7px;
 }
