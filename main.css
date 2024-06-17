@@ -115,3 +115,24 @@ hr {
     text-decoration: none;
     color: rgb(150, 172, 150);
 }
+
+.random-game {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    border: none;
+    border-radius: 10px;
+    font-size: large;
+    padding: 10px;
+    margin: 10px;
+    color: rgb(149, 149, 149);
+    background-image: linear-gradient(to right, rgb(75, 116, 75), rgb(28, 83, 28));
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.random-game:hover {
+    padding: 15px;
+}
+
+.random-game:active {
+    padding: 5px;
+}

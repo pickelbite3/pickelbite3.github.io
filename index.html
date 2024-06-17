@@ -19,7 +19,7 @@
     
     <h3 class="subtitle">pickelbyte</h2>
     
-    <p class="count">312</p>
+    <p class="count" id="count">312</p>
     
     <hr />
     
@@ -31,8 +31,10 @@
       <input type="text" class="search-input" placeholder="Search"
         oninput="filterGames()">
       <p class="sort-lbl">Sort by:</p>
-      <button class="sort-btn" id="sortToggle" onclick="toggleSort()">New - Old</button>      
+      <button class="sort-btn" id="sortToggle" onclick="toggleSort()">New - Old</button> 
     </div>
+
+    <button class="random-game" onclick="pickRandom()">Random</button>
     
     <hr>
     
