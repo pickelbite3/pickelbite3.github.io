@@ -5,7 +5,7 @@ const originalOrder = Array.from(gamesContainer.getElementsByClassName("game"));
 const gamesCount = document.getElementById("count");
 
 
-console.log(originalOrder);
+console.log("Whatever you're doing in here is probably not going to work since you are not very smart (no offense) :(");
 
 
 function getRndInteger(min, max) {
@@ -54,25 +54,12 @@ function closeAlert() {
 function pickRandom() {
     rnum = getRndInteger(0, parseInt(gamesCount.textContent))
     rnum--;
-
-    // get the numbered game in the list, generate link for that game, go to it by setting rgame to it
-
     game = originalOrder[rnum];
-    console.log(game)
 
     var htmlString = game.innerHTML;
-
-    // Create a temporary DOM element
     var tempElement = document.createElement('div');
-    
-    // Set the innerHTML of the temporary element to the HTML string
     tempElement.innerHTML = htmlString;
     
-    // Extract the href attribute from the first 'a' tag within the temporary element
     var link = tempElement.querySelector('a').getAttribute('href');
-    
-    // Output the link
-    console.log(link); // Outputs: /games/roadblocks/index.html
-
     window.location = link;
 }
