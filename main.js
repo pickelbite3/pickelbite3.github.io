@@ -51,6 +51,11 @@ function closeAlert() {
     alertBox.style.display = "none";
 }
 
+function closeNewsletter() {
+    const newsletterBox = document.querySelector(".newsletter");
+    newsletterBox.style.display = "none";
+}
+
 function pickRandom() {
     rnum = getRndInteger(0, parseInt(gamesCount.textContent))
     rnum--;
