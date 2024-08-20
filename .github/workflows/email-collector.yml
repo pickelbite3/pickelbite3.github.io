@@ -1,0 +1,31 @@
+name: Add Email to List
+
+on:
+  repository_dispatch:
+    types: [new-email]
+
+jobs:
+  update-email-list:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Add email to the list
+        run: |
+          EMAIL_LIST_FILE="emails.txt"
+          EMAIL_LIST_CONTENT=$(cat $EMAIL_LIST_FILE)
+          NEW_EMAIL="${{ github.event.client_payload.email }}"
+          # Check if the file is empty and handle appropriately
+          if [ -z "$EMAIL_LIST_CONTENT" ]; then
+              echo "$NEW_EMAIL" > $EMAIL_LIST_FILE
+          else
+              echo "$EMAIL_LIST_CONTENT, $NEW_EMAIL" > $EMAIL_LIST_FILE
+          fi
+          
+          git config --global user.email "yodelingpickle79@gmail.com"
+          git config --global user.name "picklebyte5"
+          git add $EMAIL_LIST_FILE
+          git commit -m "Added new email: $NEW_EMAIL"
+          git push origin main
