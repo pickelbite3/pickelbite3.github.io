@@ -24,7 +24,7 @@ hr {
     font-weight: bold;
     font-size: large;
 }
-
+/* 
 .newsletter {
     width: 90vw;
     height: max-content;
@@ -67,7 +67,7 @@ hr {
 
 .joinNL:hover {
     background-color: rgba(61, 255, 78, 0.24);
-}
+} */
 
 .close-alert {
     background: none;
