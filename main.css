@@ -162,6 +162,11 @@ hr {
     color: rgb(150, 172, 150);
 }
 
+.gametxtlnk {
+    text-decoration: none;
+    color: rgb(95, 197, 95);
+}
+
 .random-game {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     border: none;
