@@ -86,6 +86,10 @@ hr {
     background-color: rgba(0, 0, 0, .3);
 }
 
+p {
+    color: darkgray;
+}
+
 .title {
     text-align: center;
     color: darkgray;
@@ -109,7 +113,7 @@ hr {
     font-size: larger;
 }
 
-.request {
+.links {
     color: rgb(136, 212, 117);
     text-decoration: none;
     font-size: x-large;
@@ -186,4 +190,17 @@ hr {
 
 .random-game:active {
     padding: 9px;
+}
+
+.vpn-img {
+    width: 400px;
+    border-radius: 10px;
+    border: 2px solid black;
+}
+
+.code {
+    background-color: rgb(78, 78, 78);
+    padding: 2px;
+    border: 1px solid black;
+    border-radius: 5px;
 }
