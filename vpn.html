@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
+    <script>
+        function closeAlert() {
+        const alertBox = document.querySelector(".alert");
+        alertBox.style.display = "none";
+        }
+    </script>
+
+    <div class="alert">
+        <button class="close-alert" onclick="closeAlert()">X</button>
+       <p class="alert-text">Obsolete for LWSD; Fix in progress</p>
+     </div>
     <h1 class="title">How to install X-VPN</h1>
 
     <p>1: Open terminal, and if needed change to command prompt.</p>
