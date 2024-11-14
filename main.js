@@ -15,7 +15,7 @@ function getRndInteger(min, max) {
 function filterGames() {
     const searchInput = document.querySelector('.search-input');
     const games = gamesContainer.getElementsByClassName('game');
-    console.log(length(games))
+    console.log(games.length)
     const searchTerm = searchInput.value.toLowerCase();
 
     for (const game of games) {
