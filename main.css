@@ -87,7 +87,7 @@ hr {
     background-color: rgba(0, 0, 0, .3);
 }
 
-p {
+p, li {
     color: darkgray;
 }
 
@@ -194,7 +194,7 @@ p {
 }
 
 .vpn-img {
-    width: 400px;
+    height: 400px;
     border-radius: 10px;
     border: 2px solid black;
 }
@@ -204,4 +204,9 @@ p {
     padding: 2px;
     border: 1px solid black;
     border-radius: 5px;
+}
+
+.local::before {
+    content: "•";
+    color: rgb(149, 149, 149);
 }
