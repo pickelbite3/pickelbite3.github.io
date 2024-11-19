@@ -3,7 +3,8 @@ const sortbtn = document.getElementById('sortToggle');
 const gamesContainer = document.getElementById("games-container");
 const originalOrder = Array.from(gamesContainer.getElementsByClassName("game"));
 const gamesCount = document.getElementById("count");
-
+const games = gamesContainer.getElementsByClassName('game');
+gamesCount.textContent = String(games.length+1)
 
 console.log("Whatever you're doing in here is probably not going to work since you are not very smart (no offense) :(");
 
@@ -15,7 +16,7 @@ function getRndInteger(min, max) {
 function filterGames() {
     const searchInput = document.querySelector('.search-input');
     const games = gamesContainer.getElementsByClassName('game');
-    console.log(games.length)
+    
     const searchTerm = searchInput.value.toLowerCase();
 
     for (const game of games) {
