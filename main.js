@@ -135,3 +135,11 @@ function loadRecentlyPlayed() {
 
 
 loadRecentlyPlayed();
+
+
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    // Page was restored from bfcache, re-load the recent games
+    loadRecentlyPlayed();
+  }
+});
