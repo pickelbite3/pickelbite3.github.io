@@ -132,4 +132,6 @@ function loadRecentlyPlayed() {
       container.appendChild(item);
     });
   }
-  
+
+
+loadRecentlyPlayed();
