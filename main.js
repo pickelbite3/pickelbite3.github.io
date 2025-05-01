@@ -70,3 +70,76 @@ function pickRandom() {
     var link = tempElement.querySelector('a').getAttribute('href');
     window.location = link;
 }
+
+const game_container = document.getElementById("games-container")
+
+// List of allowed game directory prefixes
+const gameDirectories = ['/games/', '/games_2/', '/games_3/']; // Add more here if needed
+
+function saveRecentlyPlayed(gameName, gameUrl) {
+  let recentGames = JSON.parse(localStorage.getItem('recentGames')) || [];
+
+  recentGames = recentGames.filter(game => game.url !== gameUrl);
+  recentGames.unshift({ name: gameName, url: gameUrl });
+  recentGames = recentGames.slice(0, 5);
+
+  localStorage.setItem('recentGames', JSON.stringify(recentGames));
+}
+
+function isGameLink(url) {
+  return gameDirectories.some(dir => url.includes(dir));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  game_container.addEventListener('click', function(event) {
+    const link = event.target.closest('a');
+    if (!link) return;
+
+    const href = link.getAttribute('href');
+    if (!href) return;
+
+    if (isGameLink(href)) {
+      let gameName = link.textContent.trim();
+
+      if (!gameName) {
+        const urlParts = href.split('/');
+        gameName = decodeURIComponent(urlParts[urlParts.length - 1].replace('.html', ''));
+      }
+
+      saveRecentlyPlayed(gameName, href);
+    }
+  });
+
+  loadRecentlyPlayed();
+});
+
+function loadRecentlyPlayed() {
+    const recentGames = JSON.parse(localStorage.getItem('recentGames')) || [];
+    const container = document.getElementById('recently-played');
+  
+    if (!container) return;
+  
+    container.innerHTML = ''; // Clear old content
+  
+    if (recentGames.length === 0) {
+      container.innerHTML = '<p>No games played yet.</p>';
+      return;
+    }
+  
+    recentGames.forEach(game => {
+      const item = document.createElement('p');
+      item.innerHTML = `<a class="gametxt" href="${game.url}">${game.name}</a>`;
+      container.appendChild(item);
+    });
+  }
+
+
+loadRecentlyPlayed();
+
+
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    // Page was restored from bfcache, re-load the recent games
+    loadRecentlyPlayed();
+  }
+});

@@ -167,6 +167,10 @@ p, li {
     color: rgb(150, 172, 150);
 }
 
+.recent {
+    font-size: larger;
+}
+
 .gametxtlnk {
     text-decoration: none;
     color: rgb(95, 197, 95);
