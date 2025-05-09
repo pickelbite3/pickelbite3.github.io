@@ -143,3 +143,66 @@ window.addEventListener('pageshow', function(event) {
     loadRecentlyPlayed();
   }
 });
+
+
+function loadStarredGames() {
+  return JSON.parse(localStorage.getItem('starredGames') || '[]');
+}
+
+function saveStarredGames(starred) {
+  localStorage.setItem('starredGames', JSON.stringify(starred));
+}
+
+function toggleStar(gameName, starElement) {
+  let starredGames = loadStarredGames();
+  const isStarred = starredGames.includes(gameName);
+
+  if (isStarred) {
+    starredGames = starredGames.filter(name => name !== gameName);
+    starElement.classList.remove('fa-solid');
+    starElement.classList.add('fa-regular');
+  } else {
+    starredGames.push(gameName);
+    starElement.classList.remove('fa-regular');
+    starElement.classList.add('fa-solid');
+  }
+
+  saveStarredGames(starredGames);
+}
+function setupStarIcons() {
+  const games = document.querySelectorAll('#games-container .game');
+  const starredGames = loadStarredGames();
+
+  games.forEach(game => {
+    const link = game.querySelector('.gametxt');
+    if (!link) return;
+
+    const gameName = link.textContent.trim();
+    const star = document.createElement('i');
+    star.classList.add('fa-star', 'fa-lg', 'fa-clickable', 'fav-star');
+
+    if (starredGames.includes(gameName)) {
+      star.classList.add('fa-solid');
+    } else {
+      star.classList.add('fa-regular');
+    }
+
+    star.style.marginRight = '8px';
+    star.style.cursor = 'pointer';
+
+    star.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      toggleStar(gameName, star);
+    });
+
+    // Insert star before the link
+    link.parentElement.insertBefore(star, link);
+  });
+}
+
+
+// Run after DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  setupStarIcons();
+});
