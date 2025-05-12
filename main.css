@@ -249,3 +249,25 @@ p, li {
     color: rgb(150, 172, 150);
     scale: 0.8;
 }
+
+.recent-fav {
+    display: flex;
+    flex-direction: row;
+}
+
+.s-cont{
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #505050;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.s-cont div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+}
