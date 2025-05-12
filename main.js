@@ -213,6 +213,7 @@ function loadFavoritedGames() {
         star.classList.add('fa-star', 'fa-lg', 'fa-clickable', 'fav-star');
         star.style.marginRight = '8px';
         star.style.cursor = 'pointer';
+        item.classList.add('favorite-game')
 
         if (starredGames.includes(starredName)) {
           star.classList.add('fa-solid');

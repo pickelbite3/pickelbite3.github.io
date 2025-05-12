@@ -253,6 +253,9 @@ p, li {
 .recent-fav {
     display: flex;
     flex-direction: row;
+    width: 50%;
+    align-items: center;
+    justify-content: center;
 }
 
 .s-cont{
@@ -263,11 +266,55 @@ p, li {
     padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    align-items: center;
+    height: 200px;
+    width: fit-content;
 }
 
-.s-cont div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; 
+#recently-played p {
+    padding: 0px;
+    margin: 5px;
 }
+
+#recently-played {
+    text-align: center;
+}
+
+.favorite-game {
+    font-size: larger;
+}
+
+#favorited-games p {
+    padding: 0px;
+    margin: 5px;
+}
+
+
+#favorited-games {
+    text-align: center;
+    overflow: scroll;
+    overflow-x: visible;
+}
+
+/* Target the scrollbar itself */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  /* Track (background) */
+  ::-webkit-scrollbar-track {
+    background: none;
+  }
+  
+  /* Thumb (the draggable part) */
+  ::-webkit-scrollbar-thumb {
+    background-image: linear-gradient(to bottom, darkgray, darkgray);
+    border-radius: 10px;
+  }
+  
+  /* Thumb on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background-image: linear-gradient(to bottom, #397162, rgb(45 87 45), rgb(9 137 9));
+  }
+  
