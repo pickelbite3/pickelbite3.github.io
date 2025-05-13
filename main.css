@@ -318,3 +318,14 @@ p, li {
     background-image: linear-gradient(to bottom, #397162, rgb(45 87 45), rgb(9 137 9));
   }
   
+
+
+
+.othersite-link {
+    width: 80%;
+    text-align: center;
+}
+
+.othersite-link a {
+    color: rgb(136, 212, 117);
+}
