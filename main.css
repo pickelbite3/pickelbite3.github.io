@@ -288,6 +288,7 @@ p, li {
 #favorited-games p {
     padding: 0px;
     margin: 5px;
+    font-size: larger;
 }
 
 
