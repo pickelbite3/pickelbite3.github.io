@@ -1,249 +1,211 @@
-var sortAscending = false;
-const sortbtn = document.getElementById('sortToggle');
-const gamesContainer = document.getElementById("games-container");
-const originalOrder = Array.from(gamesContainer.getElementsByClassName("game"));
-const gamesCount = document.getElementById("count");
-const games = gamesContainer.getElementsByClassName('game');
-gamesCount.textContent = String(games.length + 1);
+const sortbtn = document.getElementById('sortToggle')
+const gamesContainer = document.getElementById('games-container')
+const gamesCountEl = document.getElementById('count')
+const recentContainer = document.getElementById('recently-played')
+const favoritesContainer = document.getElementById('favorited-games')
+const gameDirs = ['/games/', '/games_2/', '/games_3/']
+let sortAscending = false
+const originalOrder = Array.from(gamesContainer.querySelectorAll('.game'))
 
-console.log("Whatever you're doing in here is probably not going to work since you are not very smart (no offense) :(");
+function updateCount() {
+  const count = gamesContainer.querySelectorAll('.game').length
+  gamesCountEl.textContent = String(count)
+}
 
 function getRndInteger(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 function filterGames() {
-  const searchInput = document.querySelector('.search-input');
-  const games = gamesContainer.getElementsByClassName('game');
-  const searchTerm = searchInput.value.toLowerCase();
-
-  for (const game of games) {
-    const gameText = game.querySelector('.gametxt').textContent.toLowerCase();
-    game.style.display = gameText.includes(searchTerm) ? 'block' : 'none';
-  }
+  const input = document.querySelector('.search-input')
+  if (!input) return
+  const term = input.value.trim().toLowerCase()
+  const list = gamesContainer.querySelectorAll('.game')
+  list.forEach(g => {
+    const txt = (g.querySelector('.gametxt')?.textContent || '').toLowerCase()
+    g.style.display = txt.includes(term) ? '' : 'none'
+  })
 }
 
 function toggleSort() {
-  var games = Array.from(gamesContainer.getElementsByClassName("game"));
-
-  sortAscending = !sortAscending;
-
+  const games = Array.from(gamesContainer.querySelectorAll('.game'))
+  sortAscending = !sortAscending
   if (sortAscending) {
-    sortbtn.innerHTML = "A-Z";
-    games.sort((a, b) => a.querySelector('.gametxt').textContent.localeCompare(b.querySelector('.gametxt').textContent));
+    sortbtn.innerHTML = 'A-Z'
+    games.sort((a, b) => {
+      const an = a.querySelector('.gametxt')?.textContent || ''
+      const bn = b.querySelector('.gametxt')?.textContent || ''
+      return an.localeCompare(bn, undefined, { sensitivity: 'base' })
+    })
   } else {
-    sortbtn.innerHTML = "New - Old";
-    games = originalOrder.slice();
+    sortbtn.innerHTML = 'New - Old'
+    games.splice(0, games.length, ...originalOrder)
   }
-
-  gamesContainer.innerHTML = "";
-  games.forEach(game => {
-    gamesContainer.appendChild(game);
-  });
-}
-
-function closeAlert() {
-  const alertBox = document.querySelector(".alert");
-  alertBox.style.display = "none";
-}
-
-function closeNewsletter() {
-  const newsletterBox = document.querySelector(".newsletter");
-  newsletterBox.style.display = "none";
+  games.forEach(g => gamesContainer.appendChild(g))
 }
 
 function pickRandom() {
-  rnum = getRndInteger(0, parseInt(gamesCount.textContent))
-  rnum--;
-  game = originalOrder[rnum];
-
-  var htmlString = game.innerHTML;
-  var tempElement = document.createElement('div');
-  tempElement.innerHTML = htmlString;
-
-  var link = tempElement.querySelector('a').getAttribute('href');
-  window.location = link;
+  const visibleGames = Array.from(gamesContainer.querySelectorAll('.game')).filter(g => g.style.display !== 'none')
+  if (!visibleGames.length) return
+  const idx = getRndInteger(0, visibleGames.length - 1)
+  const link = visibleGames[idx].querySelector('a')
+  if (!link) return
+  const href = link.getAttribute('href')
+  saveRecentlyPlayed(link.textContent.trim() || href.split('/').pop().replace('.html',''), href)
+  window.location.href = href
 }
 
-const game_container = document.getElementById("games-container")
-
-const gameDirectories = ['/games/', '/games_2/', '/games_3/'];
-
-function saveRecentlyPlayed(gameName, gameUrl) {
-  let recentGames = JSON.parse(localStorage.getItem('recentGames')) || [];
-
-  recentGames = recentGames.filter(game => game.url !== gameUrl);
-  recentGames.unshift({ name: gameName, url: gameUrl });
-  recentGames = recentGames.slice(0, 5);
-
-  localStorage.setItem('recentGames', JSON.stringify(recentGames));
+function saveRecentlyPlayed(name, url) {
+  const key = 'recentGames'
+  const max = 5
+  const stored = JSON.parse(localStorage.getItem(key) || '[]')
+  const filtered = stored.filter(g => g.url !== url)
+  filtered.unshift({ name, url })
+  localStorage.setItem(key, JSON.stringify(filtered.slice(0, max)))
+  renderRecentlyPlayed()
 }
-
-function isGameLink(url) {
-  return gameDirectories.some(dir => url.includes(dir));
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-  game_container.addEventListener('click', function (event) {
-    const link = event.target.closest('a');
-    if (!link) return;
-
-    const href = link.getAttribute('href');
-    if (!href) return;
-
-    if (isGameLink(href)) {
-      let gameName = link.textContent.trim();
-
-      if (!gameName) {
-        const urlParts = href.split('/');
-        gameName = decodeURIComponent(urlParts[urlParts.length - 1].replace('.html', ''));
-      }
-
-      saveRecentlyPlayed(gameName, href);
-    }
-  });
-
-  setupStarIcons();
-  loadRecentlyPlayed();
-  loadFavoritedGames();
-});
 
 function loadRecentlyPlayed() {
-  const recentGames = JSON.parse(localStorage.getItem('recentGames')) || [];
-  const container = document.getElementById('recently-played');
-
-  if (!container) return;
-
-  container.innerHTML = '';
-
-  if (recentGames.length === 0) {
-    container.innerHTML = '<p>No games played yet.</p>';
-    return;
-  }
-
-  recentGames.forEach(game => {
-    const item = document.createElement('p');
-    item.innerHTML = `<a class="gametxt" href="${game.url}">${game.name}</a>`;
-    container.appendChild(item);
-  });
+  renderRecentlyPlayed()
 }
 
-// FAVORITES
+function renderRecentlyPlayed() {
+  if (!recentContainer) return
+  const list = JSON.parse(localStorage.getItem('recentGames') || '[]')
+  recentContainer.innerHTML = ''
+  if (!list.length) {
+    recentContainer.innerHTML = '<p>No games played yet.</p>'
+    return
+  }
+  list.forEach(g => {
+    const p = document.createElement('p')
+    const a = document.createElement('a')
+    a.className = 'gametxt'
+    a.href = g.url
+    a.textContent = g.name
+    p.appendChild(a)
+    recentContainer.appendChild(p)
+  })
+}
 
 function loadStarredGames() {
-  return JSON.parse(localStorage.getItem('starredGames') || '[]');
+  return JSON.parse(localStorage.getItem('starredGames') || '[]')
 }
 
-function saveStarredGames(starred) {
-  localStorage.setItem('starredGames', JSON.stringify(starred));
+function saveStarredGames(arr) {
+  localStorage.setItem('starredGames', JSON.stringify(arr))
 }
 
-function toggleStar(gameName, starElement) {
-  let starredGames = loadStarredGames();
-  const isStarred = starredGames.includes(gameName);
-
-  if (isStarred) {
-    starredGames = starredGames.filter(name => name !== gameName);
-    starElement.classList.remove('fa-solid');
-    starElement.classList.add('fa-regular');
-  } else {
-    starredGames.push(gameName);
-    starElement.classList.remove('fa-regular');
-    starElement.classList.add('fa-solid');
-  }
-
-  saveStarredGames(starredGames);
-  loadFavoritedGames();
-}
-
-function setupStarIcons() {
-  const games = document.querySelectorAll('#games-container .game');
-  const starredGames = loadStarredGames();
-
+function ensureMainStars() {
+  const games = gamesContainer.querySelectorAll('.game')
+  const starred = loadStarredGames()
   games.forEach(game => {
-    const link = game.querySelector('.gametxt');
-    if (!link) return;
-
-    const gameName = link.textContent.trim();
-    const star = document.createElement('i');
-    star.classList.add('fa-star', 'fa-lg', 'fa-clickable', 'fav-star');
-
-    if (starredGames.includes(gameName)) {
-      star.classList.add('fa-solid');
-    } else {
-      star.classList.add('fa-regular');
+    const link = game.querySelector('.gametxt')
+    if (!link) return
+    const already = game.querySelector('.fav-star')
+    if (already) {
+      const name = link.textContent.trim()
+      already.classList.toggle('fa-solid', starred.includes(name))
+      already.classList.toggle('fa-regular', !starred.includes(name))
+      return
     }
-
-    star.style.marginRight = '8px';
-    star.style.cursor = 'pointer';
-
-    star.addEventListener('click', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      toggleStar(gameName, star);
-    });
-
-    // Insert star before the link
-    link.parentElement.insertBefore(star, link);
-  });
+    const star = document.createElement('i')
+    star.className = 'fa-star fa-lg fa-clickable fav-star'
+    star.style.marginRight = '8px'
+    star.style.cursor = 'pointer'
+    const name = link.textContent.trim()
+    star.classList.toggle('fa-solid', starred.includes(name))
+    star.classList.toggle('fa-regular', !star.classList.contains('fa-solid'))
+    link.parentElement.insertBefore(star, link)
+  })
 }
 
-function loadFavoritedGames() {
-  const favoritesContainer = document.getElementById('favorited-games');
-  if (!favoritesContainer) return;
-
-  const starredGames = loadStarredGames();
-  const allGames = document.querySelectorAll('#games-container .game');
-
-  favoritesContainer.innerHTML = '';
-
-  if (starredGames.length === 0) {
-    favoritesContainer.innerHTML = '<p>No favorites yet.</p>';
-    return;
+function renderFavorites() {
+  if (!favoritesContainer) return
+  const starred = loadStarredGames()
+  const allGames = Array.from(gamesContainer.querySelectorAll('.game'))
+  favoritesContainer.innerHTML = ''
+  if (!starred.length) {
+    favoritesContainer.innerHTML = '<p>No favorites yet.</p>'
+    return
   }
-
-  starredGames.forEach(starredName => {
-    for (const game of allGames) {
-      const link = game.querySelector('.gametxt');
-      if (link && link.textContent.trim() === starredName) {
-        const href = link.getAttribute('href');
-
-        const item = document.createElement('p');
-        const star = document.createElement('i');
-        star.classList.add('fa-star', 'fa-lg', 'fa-clickable', 'fav-star');
-        star.style.marginRight = '8px';
-        star.style.cursor = 'pointer';
-        item.classList.add('favorite-game')
-
-        if (starredGames.includes(starredName)) {
-          star.classList.add('fa-solid');
-        } else {
-          star.classList.add('fa-regular');
-        }
-
-        star.addEventListener('click', (e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          toggleStar(starredName, star);
-        });
-
-        const linkEl = document.createElement('a');
-        linkEl.href = href;
-        linkEl.textContent = starredName;
-        linkEl.classList.add('gametxt');
-
-        item.appendChild(star);
-        item.appendChild(linkEl);
-        favoritesContainer.appendChild(item);
-        break;
-      }
-    }
-  });
+  starred.forEach(name => {
+    const match = allGames.find(g => (g.querySelector('.gametxt')?.textContent || '').trim() === name)
+    if (!match) return
+    const link = match.querySelector('.gametxt')
+    const p = document.createElement('p')
+    p.className = 'favorite-game'
+    const star = document.createElement('i')
+    star.className = 'fa-star fa-lg fa-clickable fav-star'
+    star.style.marginRight = '8px'
+    star.style.cursor = 'pointer'
+    star.classList.add('fa-solid')
+    const a = document.createElement('a')
+    a.className = 'gametxt'
+    a.href = link.getAttribute('href')
+    a.textContent = name
+    p.appendChild(star)
+    p.appendChild(a)
+    favoritesContainer.appendChild(p)
+  })
 }
 
-window.addEventListener('pageshow', function (event) {
-  if (event.persisted) {
-    loadRecentlyPlayed();
-    loadFavoritedGames();
+function toggleStarByName(gameName) {
+  const starred = loadStarredGames()
+  const isStarred = starred.includes(gameName)
+  if (isStarred) {
+    const newList = starred.filter(n => n !== gameName)
+    saveStarredGames(newList)
+  } else {
+    starred.push(gameName)
+    saveStarredGames(starred)
   }
-});
+  ensureMainStars()
+  renderFavorites()
+}
+
+function handleContainerClicks(e) {
+  const star = e.target.closest('.fav-star')
+  if (star) {
+    e.preventDefault()
+    e.stopPropagation()
+    const parent = star.parentElement
+    const name = (parent.querySelector('.gametxt')?.textContent || '').trim()
+    if (!name) return
+    toggleStarByName(name)
+    return
+  }
+  const link = e.target.closest('a')
+  if (link) {
+    const href = link.getAttribute('href') || ''
+    if (gameDirs.some(d => href.includes(d))) {
+      const name = link.textContent.trim() || decodeURIComponent(href.split('/').pop().replace('.html',''))
+      saveRecentlyPlayed(name, href)
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateCount()
+  ensureMainStars()
+  renderFavorites()
+  loadRecentlyPlayed()
+  gamesContainer.addEventListener('click', handleContainerClicks)
+  if (favoritesContainer) favoritesContainer.addEventListener('click', handleContainerClicks)
+  const search = document.querySelector('.search-input')
+  if (search) search.addEventListener('input', filterGames)
+  if (sortbtn) sortbtn.addEventListener('click', toggleSort)
+  window.addEventListener('pageshow', (ev) => {
+    if (ev.persisted) {
+      ensureMainStars()
+      renderFavorites()
+      renderRecentlyPlayed()
+    }
+  })
+})
+
+window.pickRandom = pickRandom
+window.filterGames = filterGames
+window.toggleSort = toggleSort
+window.closeAlert = function(){ const a=document.querySelector('.alert'); if(a) a.style.display='none' }
+window.closeNewsletter = function(){ const n=document.querySelector('.newsletter'); if(n) n.style.display='none' }
