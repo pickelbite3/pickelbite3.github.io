@@ -274,6 +274,7 @@ p, li {
 #recently-played p {
     padding: 0px;
     margin: 5px;
+    font-size: larger;
 }
 
 #recently-played {
