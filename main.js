@@ -28,20 +28,20 @@ function filterGames() {
 }
 
 function toggleSort() {
-  const games = Array.from(gamesContainer.querySelectorAll('.game'))
-  sortAscending = !sortAscending
+  const games = Array.from(gamesContainer.querySelectorAll('.game'));
+  sortAscending = !sortAscending;
   if (sortAscending) {
-    sortbtn.innerHTML = 'A-Z'
+    sortbtn.innerHTML = 'A-Z';
     games.sort((a, b) => {
-      const an = a.querySelector('.gametxt')?.textContent || ''
-      const bn = b.querySelector('.gametxt')?.textContent || ''
-      return an.localeCompare(bn, undefined, { sensitivity: 'base' })
-    })
+      const an = a.querySelector('.gametxt')?.textContent || '';
+      const bn = b.querySelector('.gametxt')?.textContent || '';
+      return an.localeCompare(bn, undefined, { sensitivity: 'base' });
+    });
+    games.forEach(g => gamesContainer.appendChild(g));
   } else {
-    sortbtn.innerHTML = 'New - Old'
-    games.splice(0, games.length, ...originalOrder)
+    sortbtn.innerHTML = 'New - Old';
+    originalOrder.forEach(g => gamesContainer.appendChild(g));
   }
-  games.forEach(g => gamesContainer.appendChild(g))
 }
 
 function pickRandom() {
@@ -202,6 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderRecentlyPlayed()
     }
   })
+
 })
 
 window.pickRandom = pickRandom
@@ -209,3 +210,4 @@ window.filterGames = filterGames
 window.toggleSort = toggleSort
 window.closeAlert = function(){ const a=document.querySelector('.alert'); if(a) a.style.display='none' }
 window.closeNewsletter = function(){ const n=document.querySelector('.newsletter'); if(n) n.style.display='none' }
+

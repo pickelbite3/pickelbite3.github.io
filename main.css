@@ -1,6 +1,6 @@
 body {
     font-family: 'Trebuchet MS','Lucida Sans Unicode','Lucida Grande','Lucida Sans',Arial,sans-serif;
-    background: linear-gradient(to bottom,#464646,#464646,#000);
+    background: linear-gradient(to bottom,#464646,#464646,#464646,#464646,#464646,#464646,#464646,#000);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -64,14 +64,31 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 .favorites {font-size: larger;}
 
 .search-input {
-    background: none;
     border: none;
     font-size: xx-large;
     text-align: center;
     width: 40vw;
-    color: rgb(92,146,79);
+    color: rgb(139, 173, 139);
+    background: #505050;
+    border-radius: 5px;
+    box-shadow:  3px 6px rgb(41, 41, 41);
+    padding: 5px;
+    transition: 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
-.search-input:focus { outline: none; }
+.search-input:focus { 
+    outline: none;
+    border: 2px solid rgb(103,129,97);
+    box-shadow: 0 0 10px rgb(103, 129, 97), 3px 6px rgb(41, 41, 41);
+}
+
+.search-input:focus:hover {
+    box-shadow: 0 0 10px rgb(103, 129, 97), 2px 4px rgb(41, 41, 41);
+}
+
+.search-input:hover {
+    transform: scale(1.05);
+    box-shadow:  2px 4px rgb(41, 41, 41);
+}
 
 .opts {
     display: flex;
@@ -83,14 +100,23 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 .sort-lbl, .sort-btn, .random-game, .top-link {
     font-family: 'Trebuchet MS','Lucida Sans Unicode','Lucida Grande','Lucida Sans',Arial,sans-serif;
 }
-
+.sort-lbl {
+    margin-bottom: 2px;
+    margin-top: 30px;
+    font-size: smaller;
+}
 .sort-btn {
     background: none;
     font-size: large;
     border: none;
     cursor: pointer;
     transition: 0.2s;
+    border-radius: 4px;
+    color: rgb(139, 173, 139);
+    transition: 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
+.sort-btn:hover { transform: scale(1.1); }
+
 .sort-btn:active { background: rgb(83,83,83); }
 
 .random-game {
@@ -102,10 +128,10 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
     color: rgb(149,149,149);
     background: linear-gradient(to bottom right,#397162,rgb(45,87,45),rgb(9,137,9));
     cursor: pointer;
-    transition: 0.2s;
+    transition: 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
-.random-game:hover { padding: 12px; }
-.random-game:active { padding: 9px; }
+.random-game:hover {transform: scale(1.2); }
+.random-game:active { transform: scale(0.9); }
 
 .vpn-img { height: 400px; border-radius: 10px; border: 2px solid black; }
 
@@ -137,9 +163,16 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 .game, .s-cont {
     background: #505050;
     border-radius: 5px;
+    box-shadow:  3px 6px rgb(41, 41, 41);
 }
 
-.game { padding: 5px; margin-top: 10px; }
+.game { padding: 5px; margin-top: 10px; transition:  0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+
+.game:hover {
+    transform: scale(1.1);
+    box-shadow: 2px 4px rgb(41, 41, 41);
+}
+
 
 .fav-star { color: rgb(150,172,150); scale: 0.8; }
 
@@ -171,3 +204,8 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 ::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom,#397162,rgb(45,87,45),rgb(9,137,9)); }
 
 .othersite-link { width: 80%; text-align: center; }
+
+
+footer {
+    margin: 20px;
+}
