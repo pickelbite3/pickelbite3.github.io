@@ -62,6 +62,24 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 .gametxt { text-decoration: none; color: rgb(150,172,150); }
 .recent  { font-size: larger; }
 .favorites {font-size: larger;}
+.top5 {font-size: larger;}
+
+/* Spinner styles */
+.spinner {
+  border: none;
+  border-top: 4px solid rgb(139, 173, 139); /* Blue */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto; /* center it */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 .search-input {
     border: none;
