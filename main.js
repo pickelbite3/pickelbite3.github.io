@@ -211,3 +211,28 @@ window.toggleSort = toggleSort
 window.closeAlert = function(){ const a=document.querySelector('.alert'); if(a) a.style.display='none' }
 window.closeNewsletter = function(){ const n=document.querySelector('.newsletter'); if(n) n.style.display='none' }
 
+const API_URL = "https://script.google.com/macros/s/AKfycbznzRXMp4oT_eM8lt_N_yUZEq2qHmlKacf6W0ozgllR-RY0OZ5YacfEvrLeA1iQ8_YQeg/exec"; // from Apps Script deployment
+
+// Track a click
+function trackClick(gameId, gameName) {
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({ game: gameId, name: gameName })
+  });
+}
+
+// Load top 5 on page load
+async function loadTop5() {
+  const res = await fetch(API_URL);
+  const top5 = await res.json();
+
+  const container = document.getElementById("top5");
+  container.innerHTML = "";
+  top5.forEach(([id, name, clicks]) => {
+    const li = document.createElement("li");
+    li.textContent = `${name} (${clicks} clicks)`;
+    container.appendChild(li);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", loadTop5);
