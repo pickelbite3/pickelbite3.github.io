@@ -80,6 +80,10 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
   100% { transform: rotate(360deg); }
 }
 
+.top5 a {
+    color: rgb(150,172,150);
+    text-decoration: none;
+}
 
 .search-input {
     border: none;
