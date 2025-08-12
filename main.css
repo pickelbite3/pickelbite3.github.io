@@ -170,6 +170,7 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
     font-size: large;
     padding: 15px;
     margin: 10px;
+    margin-left: 20px;
     color: rgb(149,149,149);
     background: linear-gradient(to bottom right,#397162,rgb(45,87,45),rgb(9,137,9));
     cursor: pointer;
