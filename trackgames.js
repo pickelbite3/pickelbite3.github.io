@@ -1,10 +1,11 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbx_Q3HAu02JUvEX0Ac0lJc_u7cpeagjPgIIbVfco8wtTzkw-XaVlCtzopngJxmI8BgzUA/exec"; // from Apps Script deployment
+const API_URL = "https://script.google.com/macros/s/AKfycbzE5qFRSjO4HNn-4F48LbRNQyn0Uet0KLZ76r5suMVJoGP5O18cBQF7HIF1ALeDC1te/exec"; // from Apps Script deployment
 
 // Track a click
 function trackClick(gameId, gameName) {
   fetch(API_URL, {
     method: "POST",
-    body: JSON.stringify({ game: gameId, name: gameName })
+    body: JSON.stringify({ game: gameId, name: gameName }),
+    keepalive: true
   });
 }
 
@@ -28,3 +29,17 @@ async function loadTop5() {
 }
 
 document.addEventListener("DOMContentLoaded", loadTop5);
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".game").forEach(gameDiv => {
+    const link = gameDiv.querySelector("a");
+    if (!link) return; // Skip if no link inside
+
+    const gameId = link.href; // Or parse out part of the URL if needed
+    const gameName = link.textContent.trim();
+
+    link.addEventListener("click", () => {
+      trackClick(gameId, gameName);
+    });
+  });
+});
