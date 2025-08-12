@@ -63,7 +63,23 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 .gametxt { text-decoration: none; color: rgb(150,172,150); }
 .recent  { font-size: larger; }
 .favorites {font-size: larger;}
-.top5 {font-size: larger;}
+.top5 {
+    font-size: larger;
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    align-items: left;
+}
+
+.play-count {
+    font-size: large;
+    float: right;
+    margin-left: 40px;
+    background-color: rgba(37, 37, 37, 0.473);
+    padding-left: 4px;
+    padding-right: 4px;
+    border-radius: 4px;
+}
 
 /* Spinner styles */
 .spinner {
@@ -79,6 +95,12 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.top5 div {
+    color: rgb(150,172,150);
+    text-decoration: none;
+    margin: 5px;
 }
 
 .top5 a {
@@ -218,7 +240,7 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 200px;
+    height: 220px;
     width: fit-content;
 }
 

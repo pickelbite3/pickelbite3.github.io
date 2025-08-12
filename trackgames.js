@@ -17,15 +17,22 @@ async function loadTop5() {
   const container = document.getElementById("top5");
   container.innerHTML = "";
   top5.forEach(([id, name, clicks]) => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("game-item"); // For styling container
+
     const a = document.createElement("a");
-    if (clicks === 1) {
-        a.textContent = `${name} (${clicks} Play)`;
-    } else {
-        a.textContent = `${name} (${clicks} Plays)`;
-    }
+    a.textContent = name;
     a.href = id;
-    container.appendChild(a);
-  });
+
+    const count = document.createElement("span");
+    count.textContent = `${clicks}`;
+    count.classList.add("play-count"); // For circle background styling
+
+    wrapper.appendChild(a);
+    wrapper.appendChild(count);
+    container.appendChild(wrapper);
+});
+
 }
 
 document.addEventListener("DOMContentLoaded", loadTop5);
