@@ -45,16 +45,7 @@
     
     <p class="count" id="count"></p>
     
-    <hr />
     
-    <div class="opts">
-      <input type="text" class="search-input" placeholder="Search"
-        oninput="filterGames()">
-      <p class="sort-lbl">Sort by:</p>
-      <button class="sort-btn" id="sortToggle" >New - Old</button> 
-    </div>
-
-    <button class="random-game" onclick="pickRandom()">Random</button>
   <hr>
     <div class="recent-fav">
       <div class="s-cont">
@@ -78,7 +69,18 @@
         </div>
       </div>
     </div>
+    <hr>
     
+    <div class="opts">
+      <div>
+        <input type="text" class="search-input" placeholder="Search"
+        oninput="filterGames()">    
+        <button class="random-game" onclick="pickRandom()">Random</button>
+      </div>
+      <p class="sort-lbl">Sort by:</p>
+      <button class="sort-btn" id="sortToggle" >New - Old</button> 
+    </div>
+
     
 
     <hr>
