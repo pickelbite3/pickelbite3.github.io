@@ -109,10 +109,10 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 }
 
 .search-input {
+    width: 40vw;
     border: none;
     font-size: xx-large;
     text-align: center;
-    width: 40vw;
     color: rgb(139, 173, 139);
     background: #505050;
     border-radius: 5px;
@@ -147,7 +147,7 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 }
 .sort-lbl {
     margin-bottom: 2px;
-    margin-top: 30px;
+    margin-top: 1px;
     font-size: smaller;
 }
 .sort-btn {
@@ -168,18 +168,18 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
     border: none;
     border-radius: 10px;
     font-size: large;
-    padding: 15px;
-    margin: 10px;
+    padding: 10px;
+    margin: 16px;
     margin-left: 20px;
     color: rgb(149,149,149);
     background: linear-gradient(to bottom right,#397162,rgb(45,87,45),rgb(9,137,9));
     cursor: pointer;
     transition: 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    box-shadow: 0 0 5px rgb(136,212,117), 3px 6px rgb(53, 66, 50);
+    box-shadow: 0 0 6px rgb(136, 212, 117), 3px 6px rgb(41, 41, 41);
 }
 .random-game:hover {
     transform: scale(1.2);
-    box-shadow:  0 0 5px rgb(136,212,117),2px 4px rgb(53, 66, 50);
+    box-shadow:  0 0 6px rgba(136,212,117,0.767),2px 4px rgb(41, 41, 41);
 }
 .random-game:active { transform: scale(0.9); }
 
@@ -225,7 +225,9 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 }
 
 
-.fav-star { color: rgb(150,172,150); scale: 0.8; }
+.fav-star {
+    color: rgb(150,172,150); scale: 0.8;
+}
 
 .recent-fav {
     display: flex;
