@@ -1,7 +1,7 @@
 body {
     font-family: 'Trebuchet MS','Lucida Sans Unicode','Lucida Grande','Lucida Sans',Arial,sans-serif;
     /* background: linear-gradient(to bottom,#464646,#464646,#464646,#464646,#464646,#464646,#464646,#000); */
-    background-color: rgb(61, 71, 61);
+    
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -261,4 +261,16 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 
 footer {
     margin: 20px;
+}
+/* 
+WebGL background styling: */
+#abstract-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    pointer-events: none;
+    display: block;
 }
