@@ -14,25 +14,32 @@ const fragmentShaderSource = `
   uniform vec2 resolution;
 
   float noise(vec2 p) {
-    return sin(p.x)*sin(p.y);
+    return sin(p.x) * sin(p.y);
   }
 
   void main() {
     vec2 uv = gl_FragCoord.xy / vec2(resolution.x, resolution.x);
     uv *= 2.0;
+
     float v = 0.0;
     vec2 shift = vec2(cos(time*0.1), sin(time*0.13));
     v += noise(uv*3.0 + shift);
-    v += 0.5*noise(uv*5.0 - shift*1.5);
+    v += 0.5 * noise(uv*5.0 - shift*1.5);
     v = 0.5 + 0.5*v;
 
-    // grayscale + green mix
-    vec3 darkGray  = vec3(0.12);
-    vec3 lightGray = vec3(0.45);
-    vec3 green     = vec3(0.4, 0.9, 0.3);
+    // --- Topo map style ---
+    float levels = 8.0;                 // number of contour steps
+    float stepped = floor(v * levels) / levels;
 
-    vec3 grayMix = mix(darkGray, lightGray, v);
-    vec3 col = mix(grayMix, green, smoothstep(0.55, 0.75, v));
+    vec3 darkGray  = vec3(0.12);
+    vec3 lightGray = vec3(0.6);
+    vec3 green     = vec3(0.0, 1.0, 0.3);
+
+    // interpolate grayscale across levels
+    vec3 grayBand = mix(darkGray, lightGray, stepped);
+
+    // pick green for the highest band
+    vec3 col = (stepped > 0.75) ? green : grayBand;
 
     gl_FragColor = vec4(col, 1.0);
   }
