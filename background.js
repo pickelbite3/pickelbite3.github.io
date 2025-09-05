@@ -1,6 +1,7 @@
 const canvas = document.getElementById("abstract-bg");
 const gl = canvas.getContext("webgl");
 
+// --- Vertex shader ---
 const vertexShaderSource = `
   attribute vec2 position;
   void main() {
@@ -8,17 +9,21 @@ const vertexShaderSource = `
   }
 `;
 
+// --- Fragment shader (optimized) ---
 const fragmentShaderSource = `
-  precision highp float;
+  precision mediump float;
   uniform float time;
   uniform vec2 resolution;
+  uniform float levels;
+  uniform float greenThreshold;
 
+  // lightweight "fake noise"
   float noise(vec2 p) {
     return sin(p.x) * sin(p.y);
   }
 
   void main() {
-    vec2 uv = gl_FragCoord.xy / vec2(resolution.x, resolution.x);
+    vec2 uv = gl_FragCoord.xy / resolution.x; // keep aspect scale consistent
     uv *= 2.0;
 
     float v = 0.0;
@@ -27,24 +32,21 @@ const fragmentShaderSource = `
     v += 0.5 * noise(uv*5.0 - shift*1.5);
     v = 0.5 + 0.5*v;
 
-    // --- Topo map style ---
-    float levels = 8.0;                 // number of contour steps
+    // quantize into contour levels
     float stepped = floor(v * levels) / levels;
 
     vec3 darkGray  = vec3(0.12);
     vec3 lightGray = vec3(0.6);
     vec3 green     = vec3(0.0, 1.0, 0.3);
 
-    // interpolate grayscale across levels
     vec3 grayBand = mix(darkGray, lightGray, stepped);
-
-    // pick green for the highest band
-    vec3 col = (stepped > 0.75) ? green : grayBand;
+    vec3 col = (stepped > greenThreshold) ? green : grayBand;
 
     gl_FragColor = vec4(col, 1.0);
   }
 `;
 
+// --- Shader compile helper ---
 function compileShader(type, source) {
   const shader = gl.createShader(type);
   gl.shaderSource(shader, source);
@@ -55,6 +57,7 @@ function compileShader(type, source) {
   return shader;
 }
 
+// --- Program setup ---
 const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSource);
 const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
 
@@ -64,20 +67,30 @@ gl.attachShader(program, fragmentShader);
 gl.linkProgram(program);
 gl.useProgram(program);
 
+// --- Locations ---
 const positionLocation = gl.getAttribLocation(program, "position");
 const timeLocation = gl.getUniformLocation(program, "time");
 const resolutionLocation = gl.getUniformLocation(program, "resolution");
+const levelsLocation = gl.getUniformLocation(program, "levels");
+const greenThresholdLocation = gl.getUniformLocation(program, "greenThreshold");
 
+// --- Geometry ---
 const buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-  -1, -1, 1, -1, -1, 1,
-  -1, 1, 1, -1, 1, 1,
-]), gl.STATIC_DRAW);
+gl.bufferData(
+  gl.ARRAY_BUFFER,
+  new Float32Array([
+    -1, -1, 1, -1, -1, 1,
+    -1,  1, 1, -1, 1,  1,
+  ]),
+  gl.STATIC_DRAW
+);
 
 gl.enableVertexAttribArray(positionLocation);
 gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
+// --- Resize handling ---
+let lastW = 0, lastH = 0;
 function resize() {
   const docHeight = Math.max(
     document.body.scrollHeight,
@@ -87,22 +100,41 @@ function resize() {
     document.documentElement.clientHeight
   );
 
-  canvas.width = window.innerWidth;
-  canvas.height = docHeight;
+  const w = window.innerWidth;
+  const h = docHeight;
+
+  if (w === lastW && h === lastH) return; // skip redundant resizes
+  lastW = w; lastH = h;
+
+  canvas.width = w;
+  canvas.height = h;
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 }
 window.addEventListener("resize", resize);
 resize();
 
-// auto-update if content changes (like game list updates)
-const observer = new MutationObserver(resize);
+// throttle observer -> max once per frame
+let resizeScheduled = false;
+const observer = new MutationObserver(() => {
+  if (!resizeScheduled) {
+    resizeScheduled = true;
+    requestAnimationFrame(() => {
+      resize();
+      resizeScheduled = false;
+    });
+  }
+});
 observer.observe(document.body, { childList: true, subtree: true });
 
+// --- Animation loop ---
 let startTime = Date.now();
 function draw() {
   const t = (Date.now() - startTime) * 0.001;
   gl.uniform1f(timeLocation, t);
   gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+  gl.uniform1f(levelsLocation, 8.0);        // contour levels
+  gl.uniform1f(greenThresholdLocation, 0.75); // top band is green
+
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   requestAnimationFrame(draw);
 }
