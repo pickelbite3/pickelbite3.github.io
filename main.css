@@ -39,6 +39,17 @@ hr {
 }
 .close-alert:hover { background: rgba(0,0,0,.3); }
 
+#title-container {
+    margin: 20px;
+    padding: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 10px;
+    border: 1px solid rgb(149,149,149);
+    backdrop-filter: blur(10px);
+    background-color: rgba(0,0,0,.3);
+}
+
 p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games p {
     color: darkgray;
 }
@@ -114,16 +125,16 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
     font-size: xx-large;
     text-align: center;
     color: rgb(139, 173, 139);
-    background: #505050;
     border-radius: 5px;
-    box-shadow:  3px 6px rgb(41, 41, 41);
+    border: 1px solid rgb(149,149,149);
+    backdrop-filter: blur(10px);
+    background-color: rgba(0,0,0,.3);
     padding: 5px;
     transition: 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 .search-input:focus { 
     outline: none;
     border: 2px solid rgb(103,129,97);
-    box-shadow: 0 0 10px rgb(103, 129, 97), 3px 6px rgb(41, 41, 41);
 }
 
 .search-input:focus:hover {
@@ -175,11 +186,9 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
     background: linear-gradient(to bottom right,#397162,rgb(45,87,45),rgb(9,137,9));
     cursor: pointer;
     transition: 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    box-shadow: 0 0 6px rgb(136, 212, 117), 3px 6px rgb(41, 41, 41);
 }
 .random-game:hover {
     transform: scale(1.2);
-    box-shadow:  0 0 6px rgba(136,212,117,0.767),2px 4px rgb(41, 41, 41);
 }
 .random-game:active { transform: scale(0.9); }
 
@@ -190,9 +199,9 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 .local::before { content: "•"; color: rgb(149,149,149); }
 
 .topbar {
-    background: rgb(114,114,114);
-    box-shadow:  3px 6px rgb(41, 41, 41);
-    width: fit-content;
+    border: 1px solid rgb(149,149,149);
+    backdrop-filter: blur(10px);
+    background-color: rgba(0,0,0,.3);    width: fit-content;
     height: fit-content;
     border-radius: 10px;
     display: flex;
@@ -212,16 +221,15 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 }
 
 .game, .s-cont {
-    background: #505050;
-    border-radius: 5px;
-    box-shadow:  3px 6px rgb(41, 41, 41);
+    border: 1px solid rgb(149,149,149);
+    backdrop-filter: blur(10px);
+    background-color: rgba(0,0,0,.3);    border-radius: 5px;
 }
 
 .game { padding: 5px; margin-top: 10px; transition:  0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
 
 .game:hover {
     transform: scale(1.1);
-    box-shadow: 2px 4px rgb(41, 41, 41);
 }
 
 
@@ -238,7 +246,6 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 
 .s-cont {
     margin: 10px;
-    border: none;
     padding: 10px;
     display: flex;
     flex-direction: column;
