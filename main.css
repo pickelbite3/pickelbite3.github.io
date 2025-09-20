@@ -16,6 +16,12 @@ hr {
     background: rgb(83,83,83);
 }
 
+header {
+    display: flex;
+    justify-content: center;
+
+}
+
 .alert {
     width: 90vw;
     background: rgb(209,53,53);
@@ -280,4 +286,20 @@ WebGL background styling: */
     width: 100%;
     pointer-events: none;
     display: block;
+}
+
+#bg-mode {
+    background-color: rgba(0,0,0,.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgb(149,149,149);
+    padding: 10px;
+    border-radius: 10px;
+    color: rgb(195,195,195);
+    margin: 10px;
+}
+
+#bg-mode option {
+    background-color: rgb(37,37,37);
+    color: rgb(195,195,195);
+    border: none;
 }

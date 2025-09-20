@@ -9,7 +9,7 @@ const vertexShaderSource = `
   }
 `;
 
-// --- Fragment shader (optimized) ---
+// --- Fragment shader ---
 const fragmentShaderSource = `
   precision mediump float;
   uniform float time;
@@ -17,14 +17,15 @@ const fragmentShaderSource = `
   uniform float levels;
   uniform float greenThreshold;
 
-  // lightweight "fake noise"
   float noise(vec2 p) {
     return sin(p.x) * sin(p.y);
   }
 
   void main() {
-    vec2 uv = gl_FragCoord.xy / resolution.x; // keep aspect scale consistent
-    uv *= 2.0;
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv.x *= resolution.x / resolution.y; // keep aspect ratio
+
+    uv *= 15.0;
 
     float v = 0.0;
     vec2 shift = vec2(cos(time*0.1), sin(time*0.13));
@@ -32,7 +33,6 @@ const fragmentShaderSource = `
     v += 0.5 * noise(uv*5.0 - shift*1.5);
     v = 0.5 + 0.5*v;
 
-    // quantize into contour levels
     float stepped = floor(v * levels) / levels;
 
     vec3 darkGray  = vec3(0.12);
@@ -103,7 +103,7 @@ function resize() {
   const w = window.innerWidth;
   const h = docHeight;
 
-  if (w === lastW && h === lastH) return; // skip redundant resizes
+  if (w === lastW && h === lastH) return;
   lastW = w; lastH = h;
 
   canvas.width = w;
@@ -113,7 +113,7 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-// throttle observer -> max once per frame
+// observe DOM changes to auto-resize
 let resizeScheduled = false;
 const observer = new MutationObserver(() => {
   if (!resizeScheduled) {
@@ -126,16 +126,43 @@ const observer = new MutationObserver(() => {
 });
 observer.observe(document.body, { childList: true, subtree: true });
 
-// --- Animation loop ---
-let startTime = Date.now();
-function draw() {
-  const t = (Date.now() - startTime) * 0.001;
-  gl.uniform1f(timeLocation, t);
-  gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-  gl.uniform1f(levelsLocation, 8.0);        // contour levels
-  gl.uniform1f(greenThresholdLocation, 0.75); // top band is green
+// --- Background mode selector ---
+const modeSelect = document.getElementById("bg-mode");
+let bgMode = "dynamic"; // "dynamic", "static", or "plain"
 
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+let frozenTime = 0; // will hold the frame when switching to static
+let startTime = Date.now();
+
+modeSelect.addEventListener("change", (e) => {
+  bgMode = e.target.value;
+
+  if (bgMode === "plain") {
+    canvas.style.display = "none";
+    document.body.style.background = "#222";
+  } else {
+    canvas.style.display = "block";
+    document.body.style.background = "none";
+
+    if (bgMode === "static") {
+      // freeze the current animated time
+      frozenTime = (Date.now() - startTime) * 0.001;
+    }
+  }
+});
+
+// --- Animation loop ---
+function draw() {
+  if (bgMode !== "plain") {
+    const liveTime = (Date.now() - startTime) * 0.001;
+    const t = (bgMode === "dynamic") ? liveTime : frozenTime;
+
+    gl.uniform1f(timeLocation, t);
+    gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+    gl.uniform1f(levelsLocation, 8.0);
+    gl.uniform1f(greenThresholdLocation, 0.75);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
   requestAnimationFrame(draw);
 }
 draw();
