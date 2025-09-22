@@ -1,3 +1,12 @@
+<canvas id="abstract-bg"></canvas>
+
+<select id="bg-mode">
+  <option value="dynamic">Dynamic</option>
+  <option value="static">Static</option>
+  <option value="plain">Plain</option>
+</select>
+
+<script>
 const canvas = document.getElementById("abstract-bg");
 const gl = canvas.getContext("webgl");
 
@@ -9,7 +18,7 @@ const vertexShaderSource = `
   }
 `;
 
-// --- Fragment shader ---
+// --- Fragment shader (optimized) ---
 const fragmentShaderSource = `
   precision mediump float;
   uniform float time;
@@ -23,9 +32,8 @@ const fragmentShaderSource = `
 
   void main() {
     vec2 uv = gl_FragCoord.xy / resolution;
-    uv.x *= resolution.x / resolution.y; // keep aspect ratio
-
-    uv *= 15.0;
+    uv.x *= resolution.x / resolution.y; // keep proportions
+    uv *= 10.0;
 
     float v = 0.0;
     vec2 shift = vec2(cos(time*0.1), sin(time*0.13));
@@ -113,7 +121,6 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-// observe DOM changes to auto-resize
 let resizeScheduled = false;
 const observer = new MutationObserver(() => {
   if (!resizeScheduled) {
@@ -128,11 +135,7 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 // --- Background mode selector ---
 const modeSelect = document.getElementById("bg-mode");
-let bgMode = "dynamic"; // "dynamic", "static", or "plain"
-
-let frozenTime = 0; // will hold the frame when switching to static
-let startTime = Date.now();
-
+let bgMode = "dynamic"; 
 modeSelect.addEventListener("change", (e) => {
   bgMode = e.target.value;
 
@@ -142,27 +145,31 @@ modeSelect.addEventListener("change", (e) => {
   } else {
     canvas.style.display = "block";
     document.body.style.background = "none";
-
-    if (bgMode === "static") {
-      // freeze the current animated time
-      frozenTime = (Date.now() - startTime) * 0.001;
-    }
+    draw(); // restart loop or single render
   }
 });
 
-// --- Animation loop ---
-function draw() {
-  if (bgMode !== "plain") {
-    const liveTime = (Date.now() - startTime) * 0.001;
-    const t = (bgMode === "dynamic") ? liveTime : frozenTime;
-
-    gl.uniform1f(timeLocation, t);
-    gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-    gl.uniform1f(levelsLocation, 8.0);
-    gl.uniform1f(greenThresholdLocation, 0.75);
-
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-  }
-  requestAnimationFrame(draw);
+// --- Draw helper ---
+function drawFrame(t) {
+  gl.uniform1f(timeLocation, t);
+  gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+  gl.uniform1f(levelsLocation, 8.0);
+  gl.uniform1f(greenThresholdLocation, 0.75);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
+
+// --- Animation loop ---
+let startTime = Date.now();
+function draw() {
+  if (bgMode === "dynamic") {
+    const t = (Date.now() - startTime) * 0.001;
+    drawFrame(t);
+    requestAnimationFrame(draw);
+  } else if (bgMode === "static") {
+    // just draw once at t=0
+    drawFrame(0.0);
+  }
+}
+
+// start dynamic by default
 draw();
