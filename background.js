@@ -1,175 +1,237 @@
-<canvas id="abstract-bg"></canvas>
-
-<select id="bg-mode">
-  <option value="dynamic">Dynamic</option>
-  <option value="static">Static</option>
-  <option value="plain">Plain</option>
-</select>
-
-<script>
-const canvas = document.getElementById("abstract-bg");
-const gl = canvas.getContext("webgl");
-
-// --- Vertex shader ---
-const vertexShaderSource = `
-  attribute vec2 position;
-  void main() {
-    gl_Position = vec4(position, 0.0, 1.0);
-  }
-`;
-
-// --- Fragment shader (optimized) ---
-const fragmentShaderSource = `
-  precision mediump float;
-  uniform float time;
-  uniform vec2 resolution;
-  uniform float levels;
-  uniform float greenThreshold;
-
-  float noise(vec2 p) {
-    return sin(p.x) * sin(p.y);
+(() => {
+  const canvas = document.getElementById('abstract-bg');
+  const gl = canvas.getContext('webgl');
+  if (!gl) {
+    console.error('WebGL not supported in this browser');
+    return;
   }
 
-  void main() {
-    vec2 uv = gl_FragCoord.xy / resolution;
-    uv.x *= resolution.x / resolution.y; // keep proportions
-    uv *= 10.0;
+  // ---- shaders ----
+  const vsSrc = `
+    attribute vec2 position;
+    void main() {
+      gl_Position = vec4(position, 0.0, 1.0);
+    }
+  `;
 
-    float v = 0.0;
-    vec2 shift = vec2(cos(time*0.1), sin(time*0.13));
-    v += noise(uv*3.0 + shift);
-    v += 0.5 * noise(uv*5.0 - shift*1.5);
-    v = 0.5 + 0.5*v;
+  const fsSrc = `
+    precision mediump float;
+    uniform float time;
+    uniform vec2 resolution;
+    uniform float levels;
+    uniform float greenThreshold;
 
-    float stepped = floor(v * levels) / levels;
+    // tiny cheap "noise"
+    float noise(vec2 p) {
+      return sin(p.x) * sin(p.y);
+    }
 
-    vec3 darkGray  = vec3(0.12);
-    vec3 lightGray = vec3(0.6);
-    vec3 green     = vec3(0.0, 1.0, 0.3);
+    void main() {
+      // normalize to pixel space and correct aspect
+      vec2 uv = gl_FragCoord.xy / resolution;
+      uv.x *= resolution.x / resolution.y;
 
-    vec3 grayBand = mix(darkGray, lightGray, stepped);
-    vec3 col = (stepped > greenThreshold) ? green : grayBand;
+      // zoom control
+      uv *= 10.0;
 
-    gl_FragColor = vec4(col, 1.0);
+      float v = 0.0;
+      vec2 shift = vec2(cos(time * 0.1), sin(time * 0.13));
+      v += noise(uv * 3.0 + shift);
+      v += 0.5 * noise(uv * 5.0 - shift * 1.5);
+      v = 0.5 + 0.5 * v;
+
+      // contour quantize
+      float stepped = floor(v * levels) / levels;
+
+      vec3 darkGray = vec3(0.12);
+      vec3 lightGray = vec3(0.6);
+      vec3 green = vec3(0.0, 1.0, 0.3);
+
+      vec3 grayBand = mix(darkGray, lightGray, stepped);
+      vec3 col = (stepped > greenThreshold) ? green : grayBand;
+
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  // ---- compile/link ----
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error('Shader compile error:', gl.getShaderInfoLog(s));
+    }
+    return s;
   }
-`;
 
-// --- Shader compile helper ---
-function compileShader(type, source) {
-  const shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
+  const vS = compile(gl.VERTEX_SHADER, vsSrc);
+  const fS = compile(gl.FRAGMENT_SHADER, fsSrc);
+  const program = gl.createProgram();
+  gl.attachShader(program, vS);
+  gl.attachShader(program, fS);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error('Program link error:', gl.getProgramInfoLog(program));
   }
-  return shader;
-}
+  gl.useProgram(program);
 
-// --- Program setup ---
-const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSource);
-const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+  // ---- locations & geometry (fullscreen triangle) ----
+  const posLoc = gl.getAttribLocation(program, 'position');
+  const timeLoc = gl.getUniformLocation(program, 'time');
+  const resLoc = gl.getUniformLocation(program, 'resolution');
+  const levelsLoc = gl.getUniformLocation(program, 'levels');
+  const greenThreshLoc = gl.getUniformLocation(program, 'greenThreshold');
 
-const program = gl.createProgram();
-gl.attachShader(program, vertexShader);
-gl.attachShader(program, fragmentShader);
-gl.linkProgram(program);
-gl.useProgram(program);
+  const tri = new Float32Array([
+    -1, -1,
+     3, -1,
+    -1,  3
+  ]);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, tri, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
-// --- Locations ---
-const positionLocation = gl.getAttribLocation(program, "position");
-const timeLocation = gl.getUniformLocation(program, "time");
-const resolutionLocation = gl.getUniformLocation(program, "resolution");
-const levelsLocation = gl.getUniformLocation(program, "levels");
-const greenThresholdLocation = gl.getUniformLocation(program, "greenThreshold");
+  // set a safe clear color (transparent)
+  gl.clearColor(0,0,0,0);
 
-// --- Geometry ---
-const buffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-gl.bufferData(
-  gl.ARRAY_BUFFER,
-  new Float32Array([
-    -1, -1, 1, -1, -1, 1,
-    -1,  1, 1, -1, 1,  1,
-  ]),
-  gl.STATIC_DRAW
-);
+  // ---- resize with DPR and set uniform immediately ----
+  let lastW = 0, lastH = 0;
+  const MAX_DPR = 1.5;
 
-gl.enableVertexAttribArray(positionLocation);
-gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+  function resize() {
+    const docH = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight,
+      document.documentElement.clientHeight
+    );
+    const cssW = window.innerWidth;
+    const cssH = docH;
 
-// --- Resize handling ---
-let lastW = 0, lastH = 0;
-function resize() {
-  const docHeight = Math.max(
-    document.body.scrollHeight,
-    document.documentElement.scrollHeight,
-    document.body.offsetHeight,
-    document.documentElement.offsetHeight,
-    document.documentElement.clientHeight
-  );
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    const bufW = Math.max(1, Math.floor(cssW * dpr));
+    const bufH = Math.max(1, Math.floor(cssH * dpr));
 
-  const w = window.innerWidth;
-  const h = docHeight;
+    if (bufW === lastW && bufH === lastH) return;
+    lastW = bufW; lastH = bufH;
 
-  if (w === lastW && h === lastH) return;
-  lastW = w; lastH = h;
+    canvas.width = bufW;
+    canvas.height = bufH;
+    canvas.style.width = cssW + 'px';
+    canvas.style.height = cssH + 'px';
 
-  canvas.width = w;
-  canvas.height = h;
-  gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-}
-window.addEventListener("resize", resize);
-resize();
+    gl.viewport(0, 0, bufW, bufH);
 
-let resizeScheduled = false;
-const observer = new MutationObserver(() => {
-  if (!resizeScheduled) {
-    resizeScheduled = true;
-    requestAnimationFrame(() => {
-      resize();
-      resizeScheduled = false;
-    });
+    // set resolution uniform immediately (prevents NaNs/white)
+    gl.useProgram(program);
+    gl.uniform2f(resLoc, bufW, bufH);
   }
-});
-observer.observe(document.body, { childList: true, subtree: true });
+  window.addEventListener('resize', resize);
+  resize();
 
-// --- Background mode selector ---
-const modeSelect = document.getElementById("bg-mode");
-let bgMode = "dynamic"; 
-modeSelect.addEventListener("change", (e) => {
-  bgMode = e.target.value;
+  // also throttle DOM changes -> resize once per frame max
+  let resizeScheduled = false;
+  const observer = new MutationObserver(() => {
+    if (!resizeScheduled) {
+      resizeScheduled = true;
+      requestAnimationFrame(() => { resize(); resizeScheduled = false; });
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 
-  if (bgMode === "plain") {
-    canvas.style.display = "none";
-    document.body.style.background = "#222";
-  } else {
-    canvas.style.display = "block";
-    document.body.style.background = "none";
-    draw(); // restart loop or single render
+  // ---- draw helpers and animation control ----
+  function drawFrame(t) {
+    gl.useProgram(program);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(timeLoc, t);
+    // resolution already set at resize but set again to be safe
+    gl.uniform2f(resLoc, canvas.width, canvas.height);
+    gl.uniform1f(levelsLoc, 8.0);
+    gl.uniform1f(greenThreshLoc, 0.75);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
-});
 
-// --- Draw helper ---
-function drawFrame(t) {
-  gl.uniform1f(timeLocation, t);
-  gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-  gl.uniform1f(levelsLocation, 8.0);
-  gl.uniform1f(greenThresholdLocation, 0.75);
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
-}
+  let rafId = null;
+  let startTime = Date.now();
+  let frozenTime = 0;
 
-// --- Animation loop ---
-let startTime = Date.now();
-function draw() {
-  if (bgMode === "dynamic") {
+  function animLoop() {
     const t = (Date.now() - startTime) * 0.001;
     drawFrame(t);
-    requestAnimationFrame(draw);
-  } else if (bgMode === "static") {
-    // just draw once at t=0
-    drawFrame(0.0);
+    rafId = requestAnimationFrame(animLoop);
   }
-}
 
-// start dynamic by default
-draw();
+  function startDynamic() {
+    // if already running, do nothing
+    if (rafId != null) return;
+    // resume from frozenTime so animation is continuous
+    startTime = Date.now() - (frozenTime * 1000);
+    rafId = requestAnimationFrame(animLoop);
+  }
+
+  function stopDynamicAndFreeze() {
+    if (rafId != null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    // capture current time as frozen snapshot
+    frozenTime = (Date.now() - startTime) * 0.001;
+    // render that frozen frame once
+    drawFrame(frozenTime);
+  }
+
+  function stopAllAndHide() {
+    if (rafId != null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    canvas.style.display = 'none';
+  }
+
+  function showCanvas() {
+    canvas.style.display = 'block';
+    // make sure resolution uniform is up-to-date
+    resize();
+  }
+
+  // ---- UI: mode select ----
+  const modeSelect = document.getElementById('bg-mode');
+  let mode = modeSelect.value || 'dynamic';
+
+  modeSelect.addEventListener('change', (e) => {
+    const newMode = e.target.value;
+    if (newMode === mode) return;
+    mode = newMode;
+
+    if (mode === 'dynamic') {
+      // show canvas and start dynamic animation
+      showCanvas();
+      startDynamic();
+      document.body.style.background = 'none';
+    } else if (mode === 'static') {
+      // ensure canvas visible, stop anim and freeze last frame
+      showCanvas();
+      stopDynamicAndFreeze();
+      document.body.style.background = 'none';
+    } else if (mode === 'plain') {
+      // hide canvas and use CSS color
+      stopAllAndHide();
+      document.body.style.background = '#222';
+    }
+  });
+
+  // start as dynamic initially
+  mode = 'dynamic';
+  modeSelect.value = 'dynamic';
+  showCanvas();
+  startDynamic();
+
+  // expose for debugging (optional)
+  window.____topo_bg = {
+    drawFrame, startDynamic, stopDynamicAndFreeze, stopAllAndHide, resize
+  };
+})();
