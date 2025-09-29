@@ -169,16 +169,5 @@
   }
 
   // ---- UI ----
-  const modeSelect = document.getElementById('bg-mode');
-  modeSelect.addEventListener('change', (e) => {
-    const newMode = e.target.value;
-    if (newMode === 'dynamic') {
-      startDynamic();
-    } else if (newMode === 'static') {
-      stopDynamicAndFreeze();
-    }
-  });
-
-  // start dynamic by default
   startDynamic();
 })();
