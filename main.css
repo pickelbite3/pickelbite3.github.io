@@ -274,6 +274,7 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 
 footer {
     margin: 20px;
+    text-align: center;
 }
 /* 
 WebGL background styling: */
@@ -302,4 +303,9 @@ WebGL background styling: */
     background-color: rgb(37,37,37);
     color: rgb(195,195,195);
     border: none;
+}
+
+#privacy-policy {
+    color: rgb(136,212,117);
+    text-decoration: none;
 }
