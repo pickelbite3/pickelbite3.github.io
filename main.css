@@ -245,7 +245,7 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 
 .recent-fav {
     display: flex;
-    width: 50%;
+    width: 60%;
     align-items: center;
     justify-content: center;
 }
@@ -257,7 +257,7 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
     flex-direction: column;
     align-items: center;
     height: 220px;
-    width: fit-content;
+    width: max-content;
 }
 
 #recently-played, #favorited-games { text-align: center; }
