@@ -144,7 +144,7 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 }
 
 .search-input:focus:hover {
-    box-shadow: 0 0 10px rgb(103, 129, 97), 2px 4px rgb(41, 41, 41);
+    box-shadow: 0 0 10px rgb(103, 129, 97);
 }
 
 .search-input:hover {
