@@ -149,7 +149,6 @@ p, li, .title, .subtitle, .sort-lbl, .sort-btn, .favorite-game, #favorited-games
 
 .search-input:hover {
     transform: scale(1.05);
-    box-shadow:  2px 4px rgb(41, 41, 41);
 }
 
 .opts {
