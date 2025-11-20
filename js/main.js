@@ -3,7 +3,7 @@ const gamesContainer = document.getElementById('games-container')
 const gamesCountEl = document.getElementById('count')
 const recentContainer = document.getElementById('recently-played')
 const favoritesContainer = document.getElementById('favorited-games')
-const gameDirs = ['/games/', '/games_2/', '/games_3/']
+const gameDirs = ['/games/', '/games_2/', '/games_3/', '/games_4/']
 let sortAscending = false
 const originalOrder = Array.from(gamesContainer.querySelectorAll('.game'))
 
@@ -51,7 +51,7 @@ function pickRandom() {
   const link = visibleGames[idx].querySelector('a')
   if (!link) return
   const href = link.getAttribute('href')
-  saveRecentlyPlayed(link.textContent.trim() || href.split('/').pop().replace('.html',''), href)
+  saveRecentlyPlayed(link.textContent.trim() || href.split('/').pop().replace('.html', ''), href)
   window.location.href = href
 }
 
@@ -78,13 +78,14 @@ function renderRecentlyPlayed() {
     return
   }
   list.forEach(g => {
-    const p = document.createElement('p')
-    const a = document.createElement('a')
-    a.className = 'gametxt'
-    a.href = g.url
-    a.textContent = g.name
-    p.appendChild(a)
-    recentContainer.appendChild(p)
+    const p = document.createElement('p');
+    const a = document.createElement('a');
+    a.className = 'gametxt';
+    a.href = g.url;
+    a.textContent = g.name;
+    p.appendChild(a);
+    p.classList.add('recent-game');
+    recentContainer.appendChild(p);
   })
 }
 
@@ -179,7 +180,7 @@ function handleContainerClicks(e) {
   if (link) {
     const href = link.getAttribute('href') || ''
     if (gameDirs.some(d => href.includes(d))) {
-      const name = link.textContent.trim() || decodeURIComponent(href.split('/').pop().replace('.html',''))
+      const name = link.textContent.trim() || decodeURIComponent(href.split('/').pop().replace('.html', ''))
       saveRecentlyPlayed(name, href)
     }
   }
@@ -208,5 +209,5 @@ document.addEventListener('DOMContentLoaded', () => {
 window.pickRandom = pickRandom
 window.filterGames = filterGames
 window.toggleSort = toggleSort
-window.closeAlert = function(){ const a=document.querySelector('.alert'); if(a) a.style.display='none' }
-window.closeNewsletter = function(){ const n=document.querySelector('.newsletter'); if(n) n.style.display='none' }
+window.closeAlert = function () { const a = document.querySelector('.alert'); if (a) a.style.display = 'none' }
+window.closeNewsletter = function () { const n = document.querySelector('.newsletter'); if (n) n.style.display = 'none' }
