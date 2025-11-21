@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=SUSE+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
+html {
+    width: 99%;
+}
+
 
 body {
     font-family: 'SUSE Mono';
@@ -10,6 +14,8 @@ body {
     align-items: center;
     min-height: 100lvh;
     background-color: rgb(37, 37, 37);
+    width: 100%;
+    overflow-x: hidden;
 }
 
 hr {
@@ -164,6 +170,23 @@ a {
     text-decoration: none;
 }
 
+.action-bar {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 10fr 1fr;
+    column-gap: 20px;
+}
+
+#searchbar {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+
 .search-input {
     width: max-content;
     border: none;
@@ -176,6 +199,9 @@ a {
     background-color: rgba(0, 0, 0, .5);
     padding: 5px;
     font-family: 'SUSE Mono';
+    margin: 10px;
+    width: 100%;
+    height: 40px;
 }
 
 .search-input:focus {
@@ -183,8 +209,28 @@ a {
     border: 2px solid rgb(103, 129, 97);
 }
 
-.search-input:hover {
-    transform: scale(1.05);
+#search-results {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: max-content;
+    width: max-content;
+    background-color: rgba(0, 0, 0, 0.63);
+    z-index: 3;
+    border-radius: 20px;
+    padding: 20px;
+    font-size: 1.5rem;
+}
+
+#search-results p {
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+}
+
+#search-results p:hover {
+    background-color: rgba(37, 37, 37, 0.473);
 }
 
 .opts {
@@ -228,20 +274,14 @@ a {
     border: none;
     border-radius: 10px;
     font-size: large;
-    padding: 10px;
-    margin: 16px;
-    margin-left: 20px;
     color: rgb(223, 223, 223);
     background: linear-gradient(to bottom right, #397162, rgb(45, 87, 45), rgb(9, 137, 9));
     cursor: pointer;
+    margin: 10px;
 }
 
 .random-game:hover {
-    transform: scale(1.2);
-}
-
-.random-game:active {
-    transform: scale(0.9);
+    transform: translateY(-5px);
 }
 
 .vpn-img {
@@ -306,7 +346,7 @@ a {
 }
 
 .game:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 
@@ -315,9 +355,10 @@ a {
     scale: 0.8;
 }
 
-.recent-fav-top {
+.dashboard {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
 }
 
 .s-cont {
@@ -328,6 +369,14 @@ a {
     align-items: center;
     height: 220px;
 }
+
+#games-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 10px;
+    row-gap: 10px;
+}
+
 
 #recently-played,
 #favorited-games {

@@ -38,8 +38,8 @@
       float stepped = floor(v * levels) / levels;
 
       vec3 darkGray = vec3(0.12);
-      vec3 lightGray = vec3(0.6);
-      vec3 green = vec3(0.0, 1.0, 0.3);
+      vec3 lightGray = vec3(0.3);
+      vec3 green = vec3(0.0, 0.5, 0.2);
 
       vec3 grayBand = mix(darkGray, lightGray, stepped);
       vec3 col = (stepped > greenThreshold) ? green : grayBand;

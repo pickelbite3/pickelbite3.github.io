@@ -52,18 +52,23 @@
 
     </div>
   </header>
-  <div style="text-align: center;" id="title-container">
-    <h1 class="title">pickelbyte games</h1>
 
-    <h3 class="subtitle">by pickelbyte</h3>
+  <div class="action-bar">
+    <div id="seachbar">
+      <input type="text" class="search-input" placeholder="search" oninput="filterGames()">
+      <div id="search-results">
 
-    <p class="count" id="count"></p>
+        <!-- add paragraphs here when search is pressed, show top 5 results. enter should play the first one  -->
+      </div>
+    </div>
+
+
+    <button class="random-game" onclick="pickRandom()">Random</button>
   </div>
 
 
 
-  <hr>
-  <div class="recent-fav-top">
+  <div class="dashboard">
     <div class="s-cont">
       <p>Recently Played:</p>
       <div class="recent" id="recently-played">
@@ -88,8 +93,6 @@
   <hr>
 
   <div class="opts">
-    <input type="text" class="search-input" placeholder="Search" oninput="filterGames()">
-    <button class="random-game" onclick="pickRandom()">Random</button>
     <p class="sort-lbl">Sort by:</p>
     <button class="sort-btn" id="sortToggle">New - Old</button>
   </div>

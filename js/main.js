@@ -1,15 +1,16 @@
 const sortbtn = document.getElementById('sortToggle')
 const gamesContainer = document.getElementById('games-container')
-const gamesCountEl = document.getElementById('count')
 const recentContainer = document.getElementById('recently-played')
 const favoritesContainer = document.getElementById('favorited-games')
 const gameDirs = ['/games/', '/games_2/', '/games_3/', '/games_4/']
 let sortAscending = false
 const originalOrder = Array.from(gamesContainer.querySelectorAll('.game'))
+const input = document.querySelector('.search-input')
+const search_results = document.getElementById('search-results');
 
 function updateCount() {
   const count = gamesContainer.querySelectorAll('.game').length
-  gamesCountEl.textContent = String(count)
+  input.placeholder = "Search " + count + " games" 
 }
 
 function getRndInteger(min, max) {
@@ -17,14 +18,62 @@ function getRndInteger(min, max) {
 }
 
 function filterGames() {
-  const input = document.querySelector('.search-input')
-  if (!input) return
-  const term = input.value.trim().toLowerCase()
-  const list = gamesContainer.querySelectorAll('.game')
+  
+  if (!input || !search_results) return;
+
+  const term = input.value.trim().toLowerCase();
+  const list = gamesContainer.querySelectorAll('.game');
+  const topResults = []; // To store the top 5 matches
+
+  // 1. Clear previous dropdown results
+  search_results.innerHTML = '';
+
+  // 2. If search is empty, hide dropdown and show all games
+  if (term.length === 0) {
+    search_results.style.display = 'none';
+    list.forEach(g => {
+      g.style.display = ''; // Show all games in the main list
+    });
+    return; // We're done
+  }
+
+  // 3. Filter main list AND find top 5 results
   list.forEach(g => {
-    const txt = (g.querySelector('.gametxt')?.textContent || '').toLowerCase()
-    g.style.display = txt.includes(term) ? '' : 'none'
-  })
+    const txt = (g.querySelector('.gametxt')?.textContent || '').toLowerCase();
+    const isMatch = txt.includes(term);
+
+    // Filter the main list (like before)
+    g.style.display = isMatch ? '' : 'none';
+
+    // Add to our dropdown list (up to 5)
+    if (isMatch && topResults.length < 5) {
+      topResults.push(g);
+    }
+  });
+
+  // 4. Render the top 5 results into the dropdown
+  if (topResults.length > 0) {
+    topResults.forEach(game => {
+      const link = game.querySelector('a.gametxt');
+      if (!link) return;
+
+      // Create a new <p> element to hold the result
+      const p = document.createElement('p');
+      p.className = 'search-result-item'; // For styling if you want
+      
+      // Clone the link so we don't affect the original
+      const newLink = link.cloneNode(true); 
+      
+      p.appendChild(newLink);
+      search_results.appendChild(p);
+    });
+    
+    // Show the results dropdown
+    search_results.style.display = 'block';
+  } else {
+    // No results found, hide the dropdown
+    search_results.style.display = 'none';
+  }
 }
 
 function toggleSort() {
@@ -193,8 +242,45 @@ document.addEventListener('DOMContentLoaded', () => {
   loadRecentlyPlayed()
   gamesContainer.addEventListener('click', handleContainerClicks)
   if (favoritesContainer) favoritesContainer.addEventListener('click', handleContainerClicks)
-  const search = document.querySelector('.search-input')
-  if (search) search.addEventListener('input', filterGames)
+  const search = document.querySelector('.search-input');
+  if (search) {
+    // Run the filter function when user types
+    search.addEventListener('input', filterGames);
+    
+    // Also run filter when the user clicks *into* the search bar
+    search.addEventListener('focus', filterGames);
+
+    // Add listener for "Enter" key
+    search.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault(); // Stop default behavior
+        
+        // Find the very first link in our results
+        const firstResultLink = search_results.querySelector('.search-result-item a');
+        
+        if (firstResultLink) {
+          const href = firstResultLink.getAttribute('href');
+          const name = firstResultLink.textContent.trim();
+          
+          // Use your existing functions to save and go to the game
+          saveRecentlyPlayed(name, href);
+          window.location.href = href;
+        }
+      }
+    });
+  }
+
+  // Hide results dropdown if user clicks anywhere else
+  window.addEventListener('click', (e) => {
+    const searchBarWrapper = document.getElementById('seachbar');
+    // If the click is outside the search wrapper
+    if (searchBarWrapper && !searchBarWrapper.contains(e.target)) {
+      if (search_results) {
+        search_results.style.display = 'none';
+      }
+    }
+  });
+
   if (sortbtn) sortbtn.addEventListener('click', toggleSort)
   window.addEventListener('pageshow', (ev) => {
     if (ev.persisted) {
