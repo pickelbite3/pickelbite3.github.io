@@ -93,8 +93,24 @@
   <hr>
 
   <div class="opts">
-    <p class="sort-lbl">Sort by:</p>
-    <button class="sort-btn" id="sortToggle">New - Old</button>
+    <p class="sort-lbl" style="font-size: large; margin-bottom: 0;">Sort by:</p>
+    <div class="sort-options">
+      <label>
+        <input type="radio" name="sort" value="new" checked>
+        <span class="sort-circle"></span>
+        <span class="sort-label">New - Old</span>
+      </label>
+      <label>
+        <input type="radio" name="sort" value="az">
+        <span class="sort-circle"></span>
+        <span class="sort-label">A-Z</span>
+      </label>
+      <label>
+        <input type="radio" name="sort" value="plays">
+        <span class="sort-circle"></span>
+        <span class="sort-label">Play Count</span>
+      </label>
+    </div>
   </div>
 
   <hr>

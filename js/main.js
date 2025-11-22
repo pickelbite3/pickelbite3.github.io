@@ -1,12 +1,17 @@
-const sortbtn = document.getElementById('sortToggle')
+// const sortbtn = document.getElementById('sortToggle') // No longer needed
 const gamesContainer = document.getElementById('games-container')
 const recentContainer = document.getElementById('recently-played')
 const favoritesContainer = document.getElementById('favorited-games')
 const gameDirs = ['/games/', '/games_2/', '/games_3/', '/games_4/']
-let sortAscending = false
+// let sortAscending = false // No longer needed
 const originalOrder = Array.from(gamesContainer.querySelectorAll('.game'))
 const input = document.querySelector('.search-input')
 const search_results = document.getElementById('search-results');
+
+// --- NEW Sort variables ---
+window.currentSort = 'new'; // 'new', 'az', 'plays'
+let sortRadios; // Will be assigned in DOMContentLoaded
+// --------------------------
 
 function updateCount() {
   const count = gamesContainer.querySelectorAll('.game').length
@@ -76,22 +81,47 @@ function filterGames() {
   }
 }
 
-function toggleSort() {
+// --- REPLACED toggleSort() with sortGames() ---
+function sortGames() {
+  const sortTypeInput = document.querySelector('.sort-options input[name="sort"]:checked');
+  if (!sortTypeInput) return; // Exit if nothing is checked
+  
+  const sortType = sortTypeInput.value;
+  window.currentSort = sortType;
   const games = Array.from(gamesContainer.querySelectorAll('.game'));
-  sortAscending = !sortAscending;
-  if (sortAscending) {
-    sortbtn.innerHTML = 'A-Z';
+
+  if (sortType === 'new') {
+    // Re-add games in their original HTML order
+    originalOrder.forEach(g => gamesContainer.appendChild(g));
+  } else if (sortType === 'az') {
+    // Sort A-Z
     games.sort((a, b) => {
       const an = a.querySelector('.gametxt')?.textContent || '';
       const bn = b.querySelector('.gametxt')?.textContent || '';
       return an.localeCompare(bn, undefined, { sensitivity: 'base' });
     });
+    // Append sorted games
     games.forEach(g => gamesContainer.appendChild(g));
-  } else {
-    sortbtn.innerHTML = 'New - Old';
-    originalOrder.forEach(g => gamesContainer.appendChild(g));
+  } else if (sortType === 'plays') {
+    // Sort by play count (descending)
+    games.sort((a, b) => {
+      const aLink = a.querySelector('a')?.getAttribute('href') || '';
+      const bLink = b.querySelector('a')?.getAttribute('href') || '';
+      
+      // Get counts from the global map (populated by trackgames.js), default to 0
+      const aPlays = window.gamePlayCounts.get(aLink) || 0;
+      const bPlays = window.gamePlayCounts.get(bLink) || 0;
+
+      // Sort descending (highest plays first)
+      return bPlays - aPlays;
+    });
+    // Append sorted games
+    games.forEach(g => gamesContainer.appendChild(g));
   }
 }
+// Expose to global scope (for trackgames.js to call if needed)
+window.sortGames = sortGames; 
+// -----------------------------------------------
 
 function pickRandom() {
   const visibleGames = Array.from(gamesContainer.querySelectorAll('.game')).filter(g => g.style.display !== 'none')
@@ -242,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadRecentlyPlayed()
   gamesContainer.addEventListener('click', handleContainerClicks)
   if (favoritesContainer) favoritesContainer.addEventListener('click', handleContainerClicks)
+  
   const search = document.querySelector('.search-input');
   if (search) {
     // Run the filter function when user types
@@ -281,7 +312,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  if (sortbtn) sortbtn.addEventListener('click', toggleSort)
+  // --- REMOVED old sort button listener ---
+  // if (sortbtn) sortbtn.addEventListener('click', toggleSort)
+
+  // --- ADD new listeners for radio buttons ---
+  sortRadios = document.querySelectorAll('.sort-options input[name="sort"]');
+  sortRadios.forEach(radio => {
+    radio.addEventListener('change', sortGames);
+  });
+  // -----------------------------------------
+
   window.addEventListener('pageshow', (ev) => {
     if (ev.persisted) {
       ensureMainStars()
@@ -294,6 +334,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.pickRandom = pickRandom
 window.filterGames = filterGames
-window.toggleSort = toggleSort
+// window.toggleSort = toggleSort // No longer exists
 window.closeAlert = function () { const a = document.querySelector('.alert'); if (a) a.style.display = 'none' }
 window.closeNewsletter = function () { const n = document.querySelector('.newsletter'); if (n) n.style.display = 'none' }

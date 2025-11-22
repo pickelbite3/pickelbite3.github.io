@@ -423,8 +423,7 @@ footer {
     text-align: center;
 }
 
-/* 
-WebGL background styling: */
+/* WebGL background styling: */
 #abstract-bg {
     position: fixed;
     top: 0;
@@ -455,4 +454,61 @@ WebGL background styling: */
 #privacy-policy {
     color: rgb(136, 212, 117);
     text-decoration: none;
+}
+
+/* --- NEW STYLES FOR SORT CIRCLES --- */
+.opts {
+  flex-direction: row; /* Align label and options horizontally */
+  gap: 20px;
+}
+
+.sort-options {
+  display: flex;
+  gap: 20px;
+}
+
+.sort-options label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: darkgray;
+  font-family: 'SUSE mono';
+  font-size: large;
+}
+
+/* Hide the actual radio button */
+.sort-options input[type="radio"] {
+  display: none;
+}
+
+.sort-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid darkgray;
+  margin-right: 8px;
+  display: inline-block;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.sort-options label:hover .sort-circle {
+  border-color: rgb(139, 173, 139);
+}
+
+.sort-options input[type="radio"]:checked + .sort-circle {
+  border-color: rgb(139, 173, 139);
+}
+
+/* Add the inner dot for the selected circle */
+.sort-options input[type="radio"]:checked + .sort-circle::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgb(139, 173, 139);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
