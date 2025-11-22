@@ -120,27 +120,16 @@ function sortGames(forceSortType) {
   window.currentSort = sortType;
   const games = Array.from(gamesContainer.querySelectorAll('.game'));
   
-  const getGameName = (g) => g.querySelector('.gametxt')?.textContent.trim() || 'UNKNOWN GAME';
-  
-  console.log(`[SORT] Starting sort: ${sortType}. Games found: ${games.length}`);
-
   if (games.length === 0) {
       console.warn("[SORT] No game elements found to sort.");
       return;
   }
-  
-  // Log current order before sort (using robust getter)
-  console.log("[SORT] Initial game order (first 5):", games.slice(0, 5).map(getGameName));
-
-  window.debugCounter = 0;
 
   if (sortType === 'new') {
     // Re-add games in their original HTML order
-    console.log("[SORT:NEW] Re-applying original order.");
     originalOrder.forEach(g => gamesContainer.appendChild(g));
   } else if (sortType === 'az') {
     // Sort A-Z
-    console.log("[SORT:AZ] Sorting alphabetically.");
     games.sort((a, b) => {
       const an = a.querySelector('.gametxt')?.textContent || '';
       const bn = b.querySelector('.gametxt')?.textContent || '';
@@ -157,14 +146,10 @@ function sortGames(forceSortType) {
         return; 
     }
 
-    // Log the data map size to confirm data presence
-    console.log(`[SORT:PLAYS] Play count data map size: ${window.gamePlayCounts.size}. Proceeding with sort.`);
-
     games.sort((a, b) => {
       const aLinkElement = a.querySelector('a');
       const bLinkElement = b.querySelector('a');
       
-      // If either element is missing a link, treat them as equal (stable sort)
       if (!aLinkElement || !bLinkElement) {
           return 0; 
       }
@@ -177,17 +162,6 @@ function sortGames(forceSortType) {
       const aPlays = aPath ? (window.gamePlayCounts.get(aPath) || 0) : 0;
       const bPlays = bPath ? (window.gamePlayCounts.get(bPath) || 0) : 0;
       
-      // --- DEBUGGING LOGIC ---
-      // We only log if the paths are found and the counts are different (or both non-zero)
-      if (window.debugCounter < 50 && (aPlays !== bPlays)) { 
-          window.debugCounter++;
-          console.log(`[SORT DEBUG #${window.debugCounter}] Comparing:`);
-          console.log(`    A: ${getGameName(a)} (Path: ${aPath}) -> Count: ${aPlays}`);
-          console.log(`    B: ${getGameName(b)} (Path: ${bPath}) -> Count: ${bPlays}`);
-          console.log(`    Result (B-A): ${bPlays - aPlays}`);
-      }
-      // -----------------------
-
       // Sort descending (highest plays first)
       return bPlays - aPlays;
     });
@@ -195,9 +169,6 @@ function sortGames(forceSortType) {
     // Append sorted games (This is the DOM manipulation step that performs the reorder)
     games.forEach(g => gamesContainer.appendChild(g));
   }
-  
-  // Log new order
-  console.log(`[SORT] Sort finished for: ${sortType}. New order (first 5):`, games.slice(0, 5).map(getGameName));
 }
 // Expose to global scope (for trackgames.js to call if needed)
 window.sortGames = sortGames; 

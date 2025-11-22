@@ -62,8 +62,6 @@ function normalizeGameUrl(fullUrl) {
 // Load game play counts for sorting
 async function loadGamePlayCounts() {
     try {
-        // NOTE: The user's Google Apps Script is expecting 'action=getAllCounts' not 'action=counts'
-        // This is a critical fix.
         const res = await fetch(`${API_URL}?action=getAllCounts`); 
         
         if (!res.ok) {
@@ -85,19 +83,10 @@ async function loadGamePlayCounts() {
         
         console.log(`Loaded ${window.gamePlayCounts.size} game play counts.`);
         
-        // --- DEBUG OVERRIDE START (Temporary, for final confirmation) ---
-        // Force high play counts for the user's reported top 5 to test sorting logic
-        console.log("Applying debug play count override for top 5 games...");
-        window.gamePlayCounts.set('/games_3/polytrack/', 5000); // Path based on user's Top 5 list
-        window.gamePlayCounts.set('/games/slope/index.html', 4000);
-        window.gamePlayCounts.set('/games_3/drift-hunters/', 3000);
-        window.gamePlayCounts.set('/games_3/highwayracers/', 2000);
-        window.gamePlayCounts.set('/games/basketrandom/index.html', 1000);
-        // --- DEBUG OVERRIDE END ---
+        // --- DEBUG OVERRIDE BLOCK REMOVED ---
         
         // NOW THAT DATA IS READY, we check if sortGames exists and trigger it.
         if (typeof window.sortGames === 'function') {
-            console.log("Play count data loaded. Triggering initial 'plays' sort.");
             
             // 1. Manually check the 'plays' radio button in the UI
             const playsRadio = document.querySelector('.sort-options input[value="plays"]');
@@ -136,7 +125,6 @@ async function loadTop5() {
       container.innerHTML = "";
       top5.forEach(([id, name, clicks]) => {
         const wrapper = document.createElement("div");
-        // wrapper.classList.add("game-item"); // This class isn't in main.css
 
         const a = document.createElement("a");
         a.textContent = name;
