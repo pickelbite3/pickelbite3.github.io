@@ -275,7 +275,7 @@ a {
     border-radius: 10px;
     font-size: large;
     color: rgb(223, 223, 223);
-    background: linear-gradient(to bottom right, #397162, rgb(45, 87, 45), rgb(9, 137, 9));
+    background: linear-gradient(to bottom right, rgb(9, 120, 20), rgb(45, 87, 45), rgb(9, 137, 9));
     cursor: pointer;
     margin: 10px;
 }
