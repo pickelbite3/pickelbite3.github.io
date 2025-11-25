@@ -1,5 +1,7 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzE5qFRSjO4HNn-4F48LbRNQyn0Uet0KLZ76r5suMVJoGP5O18cBQF7HIF1ALeDC1te/exec"; // from Apps Script deployment
 
+const top5_reload_btn = document.getElementById('top5-reload');
+
 // Track a click
 function trackClick(gameId, gameName) {
   fetch(API_URL, {
@@ -27,6 +29,7 @@ function addTrackingListeners(selector, root = document) {
 async function loadTop5() {
   const res = await fetch(API_URL);
   const top5 = await res.json();
+  console.log('loaded top 5' + top5);
 
   const container = document.getElementById("top5");
   container.innerHTML = "";
@@ -70,6 +73,7 @@ function observeSection(selector) {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadTop5();
+  top5_reload_btn.addEventListener('click', loadTop5);
 
   // Initial attach for existing items
   addTrackingListeners(".game a");
