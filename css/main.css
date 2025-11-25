@@ -78,6 +78,13 @@ li,
     color: darkgray;
 }
 
+.favorite-game {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .title {
     font-size: 1.5rem;
 }
@@ -116,6 +123,10 @@ a {
 }
 .favorites {
     font-size: larger;
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    width: 70%;
 }
 
 .top5 {
@@ -414,6 +425,9 @@ a {
 #favorited-games p {
     padding: 0;
     margin: 5px;
+}
+#recently-played {
+    text-align: left;
 }
 
 #favorited-games {

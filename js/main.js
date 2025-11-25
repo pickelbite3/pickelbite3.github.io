@@ -194,8 +194,8 @@ function renderFavorites() {
     a.className = 'gametxt'
     a.href = link.getAttribute('href')
     a.textContent = name
-    p.appendChild(star)
     p.appendChild(a)
+    p.appendChild(star)
     favoritesContainer.appendChild(p)
   })
 }
