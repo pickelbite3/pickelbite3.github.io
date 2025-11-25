@@ -1,46 +1,12 @@
+const sortbtn = document.getElementById('sortToggle')
 const gamesContainer = document.getElementById('games-container')
 const recentContainer = document.getElementById('recently-played')
 const favoritesContainer = document.getElementById('favorited-games')
 const gameDirs = ['/games/', '/games_2/', '/games_3/', '/games_4/']
+let sortAscending = false
 const originalOrder = Array.from(gamesContainer.querySelectorAll('.game'))
 const input = document.querySelector('.search-input')
 const search_results = document.getElementById('search-results');
-
-// --- NEW Sort variables ---
-window.currentSort = 'new'; // 'new', 'az', 'plays'
-let sortRadios; // Will be assigned in DOMContentLoaded
-// --------------------------
-
-/**
- * Normalizes a URL to its relative path if it matches a game directory.
- * This function must be identical to the one in trackgames.js for key consistency.
- */
-function normalizeGameUrl(fullUrl) {
-    const GAME_DIRS = ['/games/', '/games_2/', '/games_3/', '/games_4/'];
-    
-    // If the URL is already a simple path (like /games/example/index.html), use it.
-    if (fullUrl.startsWith('/') && GAME_DIRS.some(dir => fullUrl.startsWith(dir))) {
-        return fullUrl.split(/[?#]/)[0]; // Remove query/hash
-    }
-
-    // Resolve the full URL against the document's base URL
-    try {
-        const url = new URL(fullUrl, document.baseURI);
-        const pathname = url.pathname;
-        
-        // Check if the path starts with any of the known game directories
-        if (GAME_DIRS.some(dir => pathname.startsWith(dir))) {
-            // Return only the path, stripping query/hash for consistent keys
-            return pathname;
-        }
-    } catch (e) {
-        // Handle case where fullUrl is malformed and URL() constructor fails
-        return null;
-    }
-    
-    return null; // Ignore external links
-}
-
 
 function updateCount() {
   const count = gamesContainer.querySelectorAll('.game').length
@@ -110,69 +76,22 @@ function filterGames() {
   }
 }
 
-// --- REPLACED toggleSort() with sortGames() ---
-function sortGames(forceSortType) {
-  const sortTypeInput = document.querySelector('.sort-options input[name="sort"]:checked');
-  
-  // 1. Determine sort type: use forced type, otherwise checked radio, otherwise default to 'new'
-  const sortType = forceSortType || (sortTypeInput ? sortTypeInput.value : 'new'); 
-  
-  window.currentSort = sortType;
+function toggleSort() {
   const games = Array.from(gamesContainer.querySelectorAll('.game'));
-  
-  if (games.length === 0) {
-      console.warn("[SORT] No game elements found to sort.");
-      return;
-  }
-
-  if (sortType === 'new') {
-    // Re-add games in their original HTML order
-    originalOrder.forEach(g => gamesContainer.appendChild(g));
-  } else if (sortType === 'az') {
-    // Sort A-Z
+  sortAscending = !sortAscending;
+  if (sortAscending) {
+    sortbtn.innerHTML = 'A-Z';
     games.sort((a, b) => {
       const an = a.querySelector('.gametxt')?.textContent || '';
       const bn = b.querySelector('.gametxt')?.textContent || '';
       return an.localeCompare(bn, undefined, { sensitivity: 'base' });
     });
-    // Append sorted games
     games.forEach(g => gamesContainer.appendChild(g));
-  } else if (sortType === 'plays') {
-    // Sort by play count (descending)
-    
-    // Check if data is available before sorting
-    if (!window.gamePlayCounts || window.gamePlayCounts.size === 0) {
-        console.warn("[SORT:PLAYS] Play count data not available for sorting. Skipping reorder.");
-        return; 
-    }
-
-    games.sort((a, b) => {
-      const aLinkElement = a.querySelector('a');
-      const bLinkElement = b.querySelector('a');
-      
-      if (!aLinkElement || !bLinkElement) {
-          return 0; 
-      }
-
-      // Use normalizeGameUrl to get the exact relative path key (which strips query/hash)
-      const aPath = normalizeGameUrl(aLinkElement.getAttribute('href') || '');
-      const bPath = normalizeGameUrl(bLinkElement.getAttribute('href') || '');
-      
-      // If a path is invalid or null (e.g., external link not in database), treat count as 0
-      const aPlays = aPath ? (window.gamePlayCounts.get(aPath) || 0) : 0;
-      const bPlays = bPath ? (window.gamePlayCounts.get(bPath) || 0) : 0;
-      
-      // Sort descending (highest plays first)
-      return bPlays - aPlays;
-    });
-    
-    // Append sorted games (This is the DOM manipulation step that performs the reorder)
-    games.forEach(g => gamesContainer.appendChild(g));
+  } else {
+    sortbtn.innerHTML = 'New - Old';
+    originalOrder.forEach(g => gamesContainer.appendChild(g));
   }
 }
-// Expose to global scope (for trackgames.js to call if needed)
-window.sortGames = sortGames; 
-// -----------------------------------------------
 
 function pickRandom() {
   const visibleGames = Array.from(gamesContainer.querySelectorAll('.game')).filter(g => g.style.display !== 'none')
@@ -323,11 +242,12 @@ document.addEventListener('DOMContentLoaded', () => {
   loadRecentlyPlayed()
   gamesContainer.addEventListener('click', handleContainerClicks)
   if (favoritesContainer) favoritesContainer.addEventListener('click', handleContainerClicks)
-  
   const search = document.querySelector('.search-input');
   if (search) {
     // Run the filter function when user types
     search.addEventListener('input', filterGames);
+    
+    // Also run filter when the user clicks *into* the search bar
     search.addEventListener('focus', filterGames);
 
     // Add listener for "Enter" key
@@ -342,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const href = firstResultLink.getAttribute('href');
           const name = firstResultLink.textContent.trim();
           
+          // Use your existing functions to save and go to the game
           saveRecentlyPlayed(name, href);
           window.location.href = href;
         }
@@ -360,14 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- ADD new listeners for radio buttons ---
-  sortRadios = document.querySelectorAll('.sort-options input[name="sort"]');
-  sortRadios.forEach(radio => {
-    // We pass null here so sortGames() will read from the radio button
-    radio.addEventListener('change', () => sortGames(null));
-  });
-  // -----------------------------------------
-
+  if (sortbtn) sortbtn.addEventListener('click', toggleSort)
   window.addEventListener('pageshow', (ev) => {
     if (ev.persisted) {
       ensureMainStars()
@@ -376,12 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 
-  // We rely on trackgames.js to call sortGames once the play count data is loaded.
-  // We do NOT call sortGames here on DOMContentLoaded.
-
 })
 
 window.pickRandom = pickRandom
 window.filterGames = filterGames
+window.toggleSort = toggleSort
 window.closeAlert = function () { const a = document.querySelector('.alert'); if (a) a.style.display = 'none' }
 window.closeNewsletter = function () { const n = document.querySelector('.newsletter'); if (n) n.style.display = 'none' }

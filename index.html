@@ -93,30 +93,17 @@
   <hr>
 
   <div class="opts">
-    <p class="sort-lbl" style="font-size: large; margin-bottom: 0;">Sort by:</p>
-    <div class="sort-options">
-      <label>
-        <input type="radio" name="sort" value="new" checked>
-        <span class="sort-circle"></span>
-        <span class="sort-label">New - Old</span>
-      </label>
-      <label>
-        <input type="radio" name="sort" value="az">
-        <span class="sort-circle"></span>
-        <span class="sort-label">A-Z</span>
-      </label>
-      <label>
-        <input type="radio" name="sort" value="plays">
-        <span class="sort-circle"></span>
-        <span class="sort-label">Play Count</span>
-      </label>
-    </div>
+    <p class="sort-lbl">Sort by:</p>
+    <button class="sort-btn" id="sortToggle">New - Old</button>
   </div>
 
   <hr>
   <div class="container" id="games-container">
     <!-- Games -->
 
+    <div class="game">
+      <a class="gametxt" href="https://www.google.com">Google</a>
+    </div>
     <div class="game">
       <a class="gametxt" href="/games_4/geodash/">Geometry Dash</a>
     </div>
