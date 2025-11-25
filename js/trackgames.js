@@ -2,6 +2,36 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzE5qFRSjO4HNn-4F48LbRN
 
 const top5_reload_btn = document.getElementById('top5-reload');
 
+async function loadAllGames() {
+  const url = `${API_URL}?action=all`; 
+
+  try {
+    const res = await fetch(url);
+
+    // This log confirms the fetch succeeded and shows the status code (e.g., 200, 404, 500)
+    console.log("Fetch response (raw status):", res.status); 
+
+    if (!res.ok) {
+      // THIS LOG runs if the server (Google) returns an HTTP error code (e.g., 500)
+      const errorText = await res.text(); 
+      console.error(`--- FAILED DUE TO HTTP STATUS --- Status: ${res.status}. Response: ${errorText}`);
+      return; 
+    }
+
+    // Execution should reach here if status is OK (200-299)
+    const allData = await res.json();
+    
+    // THIS LOG only runs if the response was valid JSON
+    console.log("All Data (success - this must show the full array):", allData); 
+    return allData;
+
+  } catch (error) {
+    // THIS LOG runs if there's a network error, CORS error, or if res.json() fails 
+    // (because the response was HTML/text, not JSON).
+    console.error(`--- FAILED DURING FETCH PROCESS (NETWORK/JSON PARSE) --- Error:`, error);
+  }
+}
+
 // Track a click
 function trackClick(gameId, gameName) {
   fetch(API_URL, {
@@ -73,7 +103,9 @@ function observeSection(selector) {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadTop5();
+  loadAllGames();
   top5_reload_btn.addEventListener('click', loadTop5);
+  
 
   // Initial attach for existing items
   addTrackingListeners(".game a");
