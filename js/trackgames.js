@@ -21,6 +21,13 @@ async function loadAllGames() {
     // Execution should reach here if status is OK (200-299)
     const allData = await res.json();
     
+    window.allGameStats = allData; // Make stats globally accessible
+
+    // FIX: Call the sort function in main.js *after* data is loaded
+    if (typeof window.initialSortAndListeners === 'function') {
+        window.initialSortAndListeners();
+    }
+
     // THIS LOG only runs if the response was valid JSON
     console.log("All Data (success - this must show the full array):", allData); 
     return allData;
@@ -103,7 +110,7 @@ function observeSection(selector) {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadTop5();
-  loadAllGames();
+  loadAllGames(); // This runs the data fetch asynchronously
   top5_reload_btn.addEventListener('click', loadTop5);
   
 

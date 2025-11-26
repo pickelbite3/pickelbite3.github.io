@@ -87,7 +87,7 @@
         <p>Top 5 Games:</p>
         <i class="fa-solid fa-arrows-rotate" id="top5-reload"></i>
       </div>
-      
+
       <div id="top5" class="top5">
         <div class="spinner"></div>
         <!-- top 5 will load in here -->
@@ -98,7 +98,31 @@
 
   <div class="opts">
     <p class="sort-lbl">Sort by:</p>
-    <button class="sort-btn" id="sortToggle">New - Old</button>
+    <div class="sort-options">
+      <label>
+        <input type="radio" name="sort" id="sort-new-old" checked>
+        <span class="sort-circle"></span>
+        New-Old
+      </label>
+
+      <label>
+        <input type="radio" name="sort" id="sort-a-z">
+        <span class="sort-circle"></span>
+        A-Z
+      </label>
+
+      <label id="sort-popularity-label" class="loading">
+        <input type="radio" name="sort" id="sort-popularity" disabled>
+        <span class="sort-circle"></span>
+        Popularity
+        <div id="popularity-loading">
+          <div class="spinner"></div>
+        </div>
+      </label>
+    </div>
+  </div>
+
+
   </div>
 
   <hr>

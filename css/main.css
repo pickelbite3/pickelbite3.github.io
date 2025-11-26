@@ -72,7 +72,7 @@ li,
 .title,
 .subtitle,
 .sort-lbl,
-.sort-btn,
+/* .sort-btn, */ /* <-- REMOVED */
 .favorite-game,
 #favorited-games p {
     color: darkgray;
@@ -252,7 +252,7 @@ a {
 }
 
 .sort-lbl,
-.sort-btn,
+/* .sort-btn, */ /* <-- REMOVED */
 .random-game,
 .top-link {
     font-family: 'SUSE mono';
@@ -264,22 +264,7 @@ a {
     font-size: smaller;
 }
 
-.sort-btn {
-    background: none;
-    font-size: large;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    color: rgb(139, 173, 139);
-}
-
-.sort-btn:hover {
-    transform: scale(1.1);
-}
-
-.sort-btn:active {
-    background: rgb(83, 83, 83);
-}
+/* --- REMOVED .sort-btn, .sort-btn:hover, .sort-btn:active STYLES --- */
 
 .random-game {
     border: none;
@@ -552,4 +537,42 @@ footer {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+/* --- LOADING/DISABLED STYLES FOR POPULARITY SORT --- */
+#sort-popularity-label {
+    position: relative;
+    /* Establish positioning context for the overlay */
+}
+
+#sort-popularity-label.loading {
+    opacity: 0.5;
+    /* Gray out the label text and circle */
+    cursor: default;
+    pointer-events: none;
+    /* Prevent interaction with the label's child elements */
+}
+
+#popularity-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(37, 37, 37, 0.7);
+    /* Semi-transparent overlay */
+    border-radius: 5px;
+    z-index: 10;
+}
+
+/* Ensure the spinner is centered and appropriately sized */
+#popularity-loading .spinner {
+    display: block;
+    width: 15px;
+    height: 15px;
+    border-width: 3px;
+    margin: 0;
 }

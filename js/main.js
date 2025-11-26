@@ -1,12 +1,23 @@
-const sortbtn = document.getElementById('sortToggle')
+// const sortbtn = document.getElementById('sortToggle') // <-- REMOVED
 const gamesContainer = document.getElementById('games-container')
 const recentContainer = document.getElementById('recently-played')
 const favoritesContainer = document.getElementById('favorited-games')
 const gameDirs = ['/games/', '/games_2/', '/games_3/', '/games_4/']
-let sortAscending = false
+// let sortAscending = false // <-- REMOVED
 const originalOrder = Array.from(gamesContainer.querySelectorAll('.game'))
 const input = document.querySelector('.search-input')
 const search_results = document.getElementById('search-results');
+
+// --- NEW SORTING VARIABLES ---
+const sortAZ = document.getElementById('sort-a-z');
+const sortNewOld = document.getElementById('sort-new-old');
+const sortPop = document.getElementById('sort-popularity');
+let gameStatsMap = null; // To cache the map
+
+// NEW VARIABLES
+const popularityLabel = document.getElementById('sort-popularity-label'); 
+const popularityLoading = document.getElementById('popularity-loading');
+// ... rest of file ...
 
 function updateCount() {
   const count = gamesContainer.querySelectorAll('.game').length
@@ -76,22 +87,85 @@ function filterGames() {
   }
 }
 
-function toggleSort() {
+// --- NEW SORTING FUNCTIONS ---
+window.initialSortAndListeners = function() {
+  // --- NEW SORT LISTENERS ---
+  if (sortAZ) sortAZ.addEventListener('change', sortGames);
+  if (sortNewOld) sortNewOld.addEventListener('change', sortGames);
+  if (sortPop) sortPop.addEventListener('change', sortGames);
+
+  // Disable the click handler temporarily to prevent an immediate run on load
+  // If the Popularity input exists, remove the 'disabled' attribute
+  if (sortPop) sortPop.disabled = false;
+  
+  // Remove loading state from Popularity button and hide the spinner
+  if (popularityLabel) popularityLabel.classList.remove('loading');
+  if (popularityLoading) popularityLoading.style.display = 'none';
+
+  // Default sort is applied on initial load
+  sortGames();
+}
+
+// Creates a Map of { 'game name': playCount } from the global data
+function getGameStatsMap() {
+  if (gameStatsMap) return gameStatsMap; // Return cached map
+  if (!window.allGameStats) return null; // Data not loaded yet
+
+  gameStatsMap = new Map();
+  // Assumes data is [url, name, playcount]
+  window.allGameStats.forEach(item => {
+    const name = item[1];
+    const clicks = item[2];
+    
+    // FIX: Check if name is a string before calling toLowerCase()
+    if (typeof name === 'string' && name.trim().length > 0 && typeof clicks === 'number') {
+      gameStatsMap.set(name.trim().toLowerCase(), clicks);
+    }
+  });
+  return gameStatsMap;
+}
+
+// Helper to get the play count for a single game element
+function getPlayCount(gameElement) {
+  const statsMap = getGameStatsMap();
+  if (!statsMap) return -1; // Not loaded yet, sort to bottom
+
+  const name = (gameElement.querySelector('.gametxt')?.textContent || '').trim().toLowerCase();
+  return statsMap.get(name) || -1; // Get count, or -1 if not found (sorts to bottom)
+}
+
+// Main function to sort games based on which radio is checked
+function sortGames() {
   const games = Array.from(gamesContainer.querySelectorAll('.game'));
-  sortAscending = !sortAscending;
-  if (sortAscending) {
-    sortbtn.innerHTML = 'A-Z';
+
+  if (sortAZ.checked) {
     games.sort((a, b) => {
       const an = a.querySelector('.gametxt')?.textContent || '';
       const bn = b.querySelector('.gametxt')?.textContent || '';
       return an.localeCompare(bn, undefined, { sensitivity: 'base' });
     });
     games.forEach(g => gamesContainer.appendChild(g));
-  } else {
-    sortbtn.innerHTML = 'New - Old';
+  } else if (sortPop.checked) {
+    games.sort((a, b) => {
+      const countA = getPlayCount(a);
+      const countB = getPlayCount(b);
+
+      if (countA !== countB) {
+        return countB - countA; // Sort descending by play count
+      }
+      
+      // If counts are equal, sort A-Z
+      const an = a.querySelector('.gametxt')?.textContent || '';
+      const bn = b.querySelector('.gametxt')?.textContent || '';
+      return an.localeCompare(bn, undefined, { sensitivity: 'base' });
+    });
+    games.forEach(g => gamesContainer.appendChild(g));
+  } else { // Default to New-Old
     originalOrder.forEach(g => gamesContainer.appendChild(g));
   }
 }
+
+// --- END NEW SORTING FUNCTIONS ---
 
 function pickRandom() {
   const visibleGames = Array.from(gamesContainer.querySelectorAll('.game')).filter(g => g.style.display !== 'none')
@@ -281,7 +355,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  if (sortbtn) sortbtn.addEventListener('click', toggleSort)
   window.addEventListener('pageshow', (ev) => {
     if (ev.persisted) {
       ensureMainStars()
@@ -294,6 +367,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.pickRandom = pickRandom
 window.filterGames = filterGames
-window.toggleSort = toggleSort
 window.closeAlert = function () { const a = document.querySelector('.alert'); if (a) a.style.display = 'none' }
 window.closeNewsletter = function () { const n = document.querySelector('.newsletter'); if (n) n.style.display = 'none' }
