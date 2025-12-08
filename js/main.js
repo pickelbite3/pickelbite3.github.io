@@ -227,19 +227,36 @@ function ensureMainStars() {
     const link = game.querySelector('.gametxt')
     if (!link) return
     const already = game.querySelector('.fav-star')
+    const name = link.textContent.trim()
+    const isStarred = starred.includes(name)
+    
+    // If the star already exists, just update its classes
     if (already) {
-      const name = link.textContent.trim()
-      already.classList.toggle('fa-solid', starred.includes(name))
-      already.classList.toggle('fa-regular', !starred.includes(name))
+      if (isStarred) {
+        already.classList.add('ri-star-fill')
+        already.classList.remove('ri-star-line')
+      } else {
+        already.classList.add('ri-star-line')
+        already.classList.remove('ri-star-fill')
+      }
       return
     }
+
+    // Otherwise create a new star
     const star = document.createElement('i')
-    star.className = 'fa-star fa-lg fa-clickable fav-star'
+    // 'fav-star' is used for targeting click events
+    // 'ri-lg' makes the icon larger (replaces fa-lg)
+    star.className = 'ri-lg fav-star' 
     star.style.marginRight = '8px'
     star.style.cursor = 'pointer'
-    const name = link.textContent.trim()
-    star.classList.toggle('fa-solid', starred.includes(name))
-    star.classList.toggle('fa-regular', !star.classList.contains('fa-solid'))
+    
+    // Set initial icon based on starred state
+    if (isStarred) {
+        star.classList.add('ri-star-fill')
+    } else {
+        star.classList.add('ri-star-line')
+    }
+
     link.parentElement.insertBefore(star, link)
   })
 }
@@ -259,11 +276,13 @@ function renderFavorites() {
     const link = match.querySelector('.gametxt')
     const p = document.createElement('p')
     p.className = 'favorite-game'
+    
     const star = document.createElement('i')
-    star.className = 'fa-star fa-lg fa-clickable fav-star'
+    // Favorites are always filled
+    star.className = 'ri-star-fill ri-lg fav-star' 
     star.style.marginRight = '8px'
     star.style.cursor = 'pointer'
-    star.classList.add('fa-solid')
+    
     const a = document.createElement('a')
     a.className = 'gametxt'
     a.href = link.getAttribute('href')
@@ -289,6 +308,7 @@ function toggleStarByName(gameName) {
 }
 
 function handleContainerClicks(e) {
+  // .fav-star class is still used to detect clicks
   const star = e.target.closest('.fav-star')
   if (star) {
     e.preventDefault()
