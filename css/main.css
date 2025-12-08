@@ -19,7 +19,7 @@ body {
 }
 
 hr {
-    width: 30vw;
+    width: 40vw;
     font-size: large;
     border: none;
     height: 1px;
@@ -145,6 +145,11 @@ a {
     padding-left: 4px;
     padding-right: 4px;
     border-radius: 4px;
+}
+
+#version {
+    font-size: 0.8rem;
+    color: rgb(95, 95, 95);
 }
 
 /* Spinner styles */
