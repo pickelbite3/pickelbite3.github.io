@@ -150,6 +150,7 @@ a {
 #version {
     font-size: 0.8rem;
     color: rgb(95, 95, 95);
+    margin-left: 10px;
 }
 
 /* Spinner styles */
