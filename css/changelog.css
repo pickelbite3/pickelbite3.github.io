@@ -1,0 +1,28 @@
+h1 {
+    color: rgb(149, 149, 149);
+}
+
+h2 {
+    color: rgb(149, 149, 149);
+}
+
+.log {
+    color: rgb(149, 149, 149);
+    border: 2px solid rgb(124, 124, 124);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.log h3 {
+    margin: 0;
+}
+
+#back-to-main {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: rgb(149, 149, 149);
+}
